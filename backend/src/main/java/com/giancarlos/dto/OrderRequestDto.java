@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class UserResponseDto {
-    private Long id;
-    private String name;
+public class OrderRequestDto {
     private String email;
-    private String address;
-    private String phone;
+    private List<Long> cartItemIds;
+    private BigDecimal total;
 }

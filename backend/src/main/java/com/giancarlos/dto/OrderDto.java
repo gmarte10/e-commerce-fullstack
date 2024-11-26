@@ -25,4 +25,6 @@ public class OrderDto {
     private BigDecimal totalAmount;
 
     private ZonedDateTime createdAt;
+
+    private List<OrderItem> orderItems;
 }

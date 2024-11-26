@@ -6,12 +6,14 @@ import com.giancarlos.mapper.UserMapper;
 import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,9 +85,5 @@ public class UserService {
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found"));
         return userMapper.toDTO(user);
-    }
-
-    public User getUserModelById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found"));
     }
 }

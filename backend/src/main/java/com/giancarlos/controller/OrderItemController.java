@@ -1,17 +1,14 @@
 package com.giancarlos.controller;
 
-import com.giancarlos.dto.OrderDto;
-import com.giancarlos.dto.OrderItemDto;
+import com.giancarlos.dto.*;
+import com.giancarlos.model.OrderItem;
 import com.giancarlos.service.OrderItemService;
 import com.giancarlos.service.OrderService;
 import com.giancarlos.service.ProductService;
 import com.giancarlos.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

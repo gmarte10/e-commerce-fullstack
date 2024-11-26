@@ -29,6 +29,7 @@ public class UserController {
         String encodedPassword=  bCryptPasswordEncoder.encode(registerRequest.getPassword());
         UserDto registeredUser = userService.register(registerRequest.getUserDto(), encodedPassword);
         UserResponseDto userResponseDto = UserResponseDto.builder()
+                .id(registeredUser.getId())
                 .name(registeredUser.getName())
                 .email(registeredUser.getEmail())
                 .address(registeredUser.getAddress())
@@ -46,5 +47,17 @@ public class UserController {
         UserRole userRole = userService.getUserRole(email);
         String role = userRole.toString();
         return new ResponseEntity<>(role,HttpStatus.OK);
+    }
+
+    @GetMapping("/id/{email}")
+    public ResponseEntity<Long> getUserId(@PathVariable String email) {
+        UserDto user  = userService.getUserByEmail(email);
+        return new ResponseEntity<>(user.getId(), HttpStatus.OK);
+    }
+
+    @GetMapping("/address/{email}")
+    public ResponseEntity<String> getUserAddress(@PathVariable String email) {
+        UserDto user = userService.getUserByEmail(email);
+        return new ResponseEntity<>(user.getAddress(), HttpStatus.OK);
     }
 }

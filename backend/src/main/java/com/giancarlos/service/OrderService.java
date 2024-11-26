@@ -2,9 +2,11 @@ package com.giancarlos.service;
 
 import com.giancarlos.dto.OrderDto;
 import com.giancarlos.dto.OrderItemDto;
+import com.giancarlos.dto.UserDto;
 import com.giancarlos.exception.OrderNotFoundException;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.OrderItem;
+import com.giancarlos.model.User;
 import com.giancarlos.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +18,12 @@ import java.util.Optional;
 public class OrderService {
     private OrderRepository orderRepository;
     private CartItemService cartItemService;
-    public OrderService(OrderRepository orderRepository, CartItemService cartItemService) {
+    private UserService userService;
+
+    public OrderService(OrderRepository orderRepository, CartItemService cartItemService, UserService userService) {
         this.orderRepository = orderRepository;
         this.cartItemService = cartItemService;
+        this.userService = userService;
     }
 
     public List<OrderDto> findByUserId(Long userId) {
@@ -56,6 +61,23 @@ public class OrderService {
             throw new OrderNotFoundException("Order was not found");
         }
         return order.get();
+    }
+
+    public OrderDto createOrder(OrderDto orderDto) {
+        Order order = new Order();
+        User user = userService.getUserModelById(orderDto.getUserId());
+        order.setCreatedAt(orderDto.getCreatedAt());
+        order.setOrderItems(orderDto.getOrderItems());
+        order.setUser(user);
+        order.setTotalAmount(orderDto.getTotalAmount());
+        Order saved = orderRepository.save(order);
+        OrderDto retOrder = new OrderDto();
+        retOrder.setOrderItems(saved.getOrderItems());
+        retOrder.setCreatedAt(saved.getCreatedAt());
+        retOrder.setTotalAmount(saved.getTotalAmount());
+        retOrder.setUserId(saved.getUser().getId());
+        retOrder.setId(saved.getId());
+        return retOrder;
     }
 
 }

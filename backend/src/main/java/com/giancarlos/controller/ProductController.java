@@ -31,6 +31,7 @@ public class ProductController {
         for (ProductDto p : products) {
             String base64 = imageService.getImageBase64(p.getImageURL());
             ProductResponseDto prrDto = new ProductResponseDto();
+            prrDto.setId(p.getId());
             prrDto.setName(p.getName());
             prrDto.setCategory(p.getCategory());
             prrDto.setDescription(p.getDescription());

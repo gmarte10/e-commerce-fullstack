@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserResponseDto {
-    private Long id;
-    private String name;
+public class CartItemRequestDto {
     private String email;
-    private String address;
-    private String phone;
+    private Long productId;
+    private Integer quantity;
 }

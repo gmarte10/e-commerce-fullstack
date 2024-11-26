@@ -7,14 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ProductResponseDto {
-    private Long id;
+public class CartItemAsProductDto {
+    private Long cartItemId;
+    private Long productId;
     private String name;
     private String category;
     private String description;
     private BigDecimal price;
     private String imageBase64;
+    private Integer quantity;
 }

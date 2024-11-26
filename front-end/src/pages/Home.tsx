@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 interface Product {
+  id: number,
   name: string;
   price: number;
   category: string;

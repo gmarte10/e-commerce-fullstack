@@ -1,6 +1,7 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.CartItemDto;
+import com.giancarlos.dto.UserDto;
 import com.giancarlos.exception.CartItemNotFoundException;
 import com.giancarlos.mapper.ProductMapper;
 import com.giancarlos.mapper.UserMapper;
@@ -20,7 +21,7 @@ import java.util.Optional;
 public class CartItemService {
     private final CartItemRepository cartItemRepository;
     private ProductService productService;
-    private UserService userService;
+    private final UserService userService;
     private UserMapper userMapper;
     private ProductMapper productMapper;
 
@@ -30,24 +31,55 @@ public class CartItemService {
                            UserMapper userMapper,
                            ProductMapper productMapper) {
         this.cartItemRepository = cartItemRepository;
+        this.userService = userService;
+        this.userMapper = userMapper;
+        this.productService = productService;
+        this.productMapper = productMapper;
+    }
+
+    public CartItemDto findById(Long id) {
+        CartItem cartItem = cartItemRepository.findById(id).orElseThrow(() -> new CartItemNotFoundException("Cart Item was not found"));
+        CartItemDto cartItemDto = new CartItemDto();
+        cartItemDto.setId(cartItem.getId());
+        cartItemDto.setQuantity(cartItem.getQuantity());
+        cartItemDto.setUserId(cartItem.getUser().getId());
+        cartItemDto.setProductId(cartItem.getProduct().getId());
+        return cartItemDto;
     }
 
     public List<CartItemDto> findByUserId(Long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         List<CartItemDto> cartItemDtos = new ArrayList<>();
         for (CartItem c : cartItems) {
-            Long pId = c.getUser().getId();
+            Long pId = c.getProduct().getId();
             CartItemDto cartItemDto = new CartItemDto();
+            cartItemDto.setId(c.getId());
             cartItemDto.setUserId(userId);
             cartItemDto.setProductId(pId);
             cartItemDto.setQuantity(c.getQuantity());
+            cartItemDtos.add(cartItemDto);
         }
         return cartItemDtos;
     }
 
     public CartItemDto addCartItem(CartItemDto cartItemDto) {
-        CartItem cartItem = new CartItem();
+        // If the user already has this product in their cart, increase the quantity appropriately
         User user = userMapper.toEntity(userService.getUserById(cartItemDto.getUserId()));
+        if (cartItemRepository.existsByUserId(user.getId())) {
+            Optional<CartItem> existing = cartItemRepository.findByUserIdAndProductId(user.getId(), cartItemDto.getProductId());
+            if (existing.isPresent()) {
+                int quantity = existing.get().getQuantity() + cartItemDto.getQuantity();
+                existing.get().setQuantity(quantity);
+                CartItem saved = cartItemRepository.save(existing.get());
+                CartItemDto ciDto = new CartItemDto();
+                ciDto.setProductId(saved.getProduct().getId());
+                ciDto.setUserId(saved.getUser().getId());
+                ciDto.setQuantity(saved.getQuantity());
+                ciDto.setId(saved.getId());
+                return ciDto;
+            }
+        }
+        CartItem cartItem = new CartItem();
         Product product = productMapper.toEntity(productService.findById(cartItemDto.getProductId()));
         cartItem.setUser(user);
         cartItem.setProduct(product);
@@ -57,6 +89,7 @@ public class CartItemService {
         ciDto.setProductId(savedCartItem.getProduct().getId());
         ciDto.setUserId(savedCartItem.getUser().getId());
         ciDto.setQuantity(savedCartItem.getQuantity());
+        ciDto.setId(savedCartItem.getId());
         return ciDto;
     }
 
@@ -70,16 +103,18 @@ public class CartItemService {
     }
 
     @Transactional
-    public void removeProductFromCart(CartItemDto cartItemDto) {
-        Optional<CartItem> cartItem = cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId());
+    public void removeProductFromCart(String email, Long productId) {
+        UserDto user = userService.getUserByEmail(email);
+        Optional<CartItem> cartItem = cartItemRepository.findByUserIdAndProductId(user.getId(), productId);
         if (cartItem.isEmpty()) {
             throw new CartItemNotFoundException("Cart item was not found");
         }
-        cartItemRepository.delete(cartItem.get());
+        if (cartItem.get().getQuantity() > 1) {
+            cartItem.get().setQuantity(cartItem.get().getQuantity() - 1);
+            cartItemRepository.save(cartItem.get());
+        }
+        else {
+            cartItemRepository.delete(cartItem.get());
+        }
     }
-
-
-
-
-
 }
