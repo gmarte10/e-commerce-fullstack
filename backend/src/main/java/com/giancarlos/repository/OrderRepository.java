@@ -8,10 +8,4 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserIdOrderByCreatedAtDesc(Long userId);
-    List<Order> findByUserIdAndCreatedAtBetween(
-            Long userId,
-            ZonedDateTime startDate,
-            ZonedDateTime endDate
-    );
-
 }

@@ -11,8 +11,11 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByName(String name);
+
     List<Product> findByPriceLessThanEqual(BigDecimal price);
+
     List<Product> findByCategory(String categoryName);
+
     @Query("SELECT p " +
             "FROM Product p " +
             "WHERE LOWER(p.name) " +
