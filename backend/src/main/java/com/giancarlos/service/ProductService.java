@@ -62,7 +62,7 @@ public class ProductService {
         productRepository.deleteById(productId);
     }
 
-    public ProductDto findById(Long id) {
+    public ProductDto getProductById(Long id) {
         Optional<Product> found = productRepository.findById(id);
         if (found.isEmpty()) {
             throw new ProductNotFoundException("Product was not found in ProductService findById");

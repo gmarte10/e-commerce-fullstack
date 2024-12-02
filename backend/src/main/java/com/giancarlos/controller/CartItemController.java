@@ -1,7 +1,12 @@
 package com.giancarlos.controller;
 
+import com.giancarlos.dto.cartItem.CartItemDto;
+import com.giancarlos.dto.cartItem.CartItemRequestDto;
+import com.giancarlos.dto.cartItem.CartItemResponseDto;
+import com.giancarlos.dto.product.ProductDto;
+import com.giancarlos.mapper.cartItem.CartItemRequestMapper;
+import com.giancarlos.mapper.cartItem.CartItemResponseMapper;
 import com.giancarlos.service.CartItemService;
-import com.giancarlos.service.ImageService;
 import com.giancarlos.service.ProductService;
 import com.giancarlos.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -17,67 +22,63 @@ public class CartItemController {
     private final CartItemService cartItemService;
     private final UserService userService;
     private final ProductService productService;
-    private final ImageService imageService;
+    private final CartItemResponseMapper cartItemResponseMapper;
+    private final CartItemRequestMapper cartItemRequestMapper;
 
-    public CartItemController(CartItemService cartItemService, UserService userService, ProductService productService, ImageService imageService) {
+    public CartItemController(CartItemRequestMapper cartItemRequestMapper,
+                              CartItemService cartItemService,
+                              UserService userService,
+                              ProductService productService,
+                              CartItemResponseMapper cartItemResponseMapper) {
         this.cartItemService = cartItemService;
         this.userService = userService;
         this.productService = productService;
-        this.imageService = imageService;
+        this.cartItemResponseMapper = cartItemResponseMapper;
+        this.cartItemRequestMapper = cartItemRequestMapper;
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<List<CartItemAsProductDto>> getAllCartItemsByUserEmailAsProducts(@PathVariable String email) {
+    public ResponseEntity<List<CartItemResponseDto>> getCartItemsByUserEmail(@PathVariable String email) {
         Long userId = userService.getUserByEmail(email).getId();
-        List<CartItemDto> cartItems = cartItemService.findByUserId(userId);
-        List<CartItemAsProductDto> response = new ArrayList<>();
-        for (CartItemDto item : cartItems) {
-            ProductDto productDto = productService.findById(item.getProductId());
-            String base64 = imageService.getImageBase64(productDto.getImageURL());
-            CartItemAsProductDto res = new CartItemAsProductDto();
-            res.setProductId(item.getProductId());
-            res.setName(productDto.getName());
-            res.setCategory(productDto.getCategory());
-            res.setDescription(productDto.getDescription());
-            res.setImageBase64(base64);
-            res.setPrice(productDto.getPrice());
-            res.setQuantity(item.getQuantity());
-            res.setCartItemId(item.getId());
-            response.add(res);
+        List<CartItemDto> cartItems = cartItemService.getCartItemsByUserId(userId);
+        List<CartItemResponseDto> response = new ArrayList<>();
+        for (CartItemDto cartItemDto : cartItems) {
+            response.add(cartItemResponseMapper.toResponse(cartItemDto));
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/add")
     public ResponseEntity<CartItemResponseDto> addCartItem(@RequestBody CartItemRequestDto cartItemRequestDto) {
-        String cirEmail = cartItemRequestDto.getEmail();
-        System.out.println("Email: " + cirEmail);
-        Long userId = userService.getUserByEmail(cartItemRequestDto.getEmail()).getId();
-        CartItemDto cartItemDto = new CartItemDto();
-        cartItemDto.setQuantity(cartItemRequestDto.getQuantity());
-        cartItemDto.setUserId(userId);
-        cartItemDto.setProductId(cartItemRequestDto.getProductId());
-        CartItemDto saved = cartItemService.addCartItem(cartItemDto);
-        CartItemResponseDto cartItemResponseDto = new CartItemResponseDto();
-        UserDto user = userService.getUserById(saved.getUserId());
-        String email = user.getEmail();
-        cartItemResponseDto.setEmail(email);
-        cartItemResponseDto.setQuantity(saved.getQuantity());
-        cartItemResponseDto.setProductId(saved.getProductId());
-        return new ResponseEntity<>(cartItemResponseDto, HttpStatus.CREATED);
+        CartItemDto saved = cartItemService.addCartItem(cartItemRequestMapper.toDto(cartItemRequestDto));
+        CartItemResponseDto response = cartItemResponseMapper.toResponse(saved);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/remove/{email}/{productId}")
-    public ResponseEntity<String> removeCartItem(@PathVariable String email, @PathVariable Long productId) {
-        cartItemService.removeProductFromCart(email, productId);
-        return new ResponseEntity<>("CartItem was deleted", HttpStatus.OK);
+    public ResponseEntity<String> removeCartItemByEmailAndProductId(@PathVariable String email, @PathVariable Long productId) {
+        cartItemService.removeCartItemByEmailAndProductId(email, productId);
+        String response = removeCartItemResponse(email, productId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/clear/{email}")
-    public ResponseEntity<String> clearUserCartItems(@PathVariable String email) {
+    public ResponseEntity<String> removeCartItemsByEmail(@PathVariable String email) {
         Long userId = userService.getUserByEmail(email).getId();
-        cartItemService.clearUserCartItems(userId);
-        return new ResponseEntity<>("CartItems cleared", HttpStatus.OK);
+        cartItemService.removeCartItemsByUserId(userId);
+        String response = removeCartItemResponse(email, null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private String removeCartItemResponse(String email, Long productId) {
+        String intro = "CartItem(s) Successfully Deleted From {email}: ";
+        if (productId != null) {
+            ProductDto productDto = productService.getProductById(productId);
+            return intro + String.format("Product Name: %s", productDto.getName());
+        }
+        else {
+            return intro + "All CartItems";
+        }
     }
 
 }

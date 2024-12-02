@@ -1,6 +1,10 @@
 package com.giancarlos.controller;
 
-import com.giancarlos.service.ImageService;
+import com.giancarlos.dto.product.ProductDto;
+import com.giancarlos.dto.product.ProductRequestDto;
+import com.giancarlos.dto.product.ProductResponseDto;
+import com.giancarlos.mapper.product.ProductRequestMapper;
+import com.giancarlos.mapper.product.ProductResponseMapper;
 import com.giancarlos.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,51 +17,31 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
     private final ProductService productService;
-    private final ImageService imageService;
+    private final ProductResponseMapper productResponseMapper;
+    private final ProductRequestMapper productRequestMapper;
 
     public ProductController(ProductService productService,
-                             ImageService imageService) {
+                             ProductResponseMapper productResponseMapper,
+                             ProductRequestMapper productRequestMapper) {
         this.productService = productService;
-        this.imageService = imageService;
+        this.productRequestMapper = productRequestMapper;
+        this.productResponseMapper = productResponseMapper;
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+    public ResponseEntity<List<ProductResponseDto>> getProducts() {
         List<ProductDto> products = productService.findAllProducts();
-        List<ProductResponseDto> productResponseDtos = new ArrayList<>();
-        for (ProductDto p : products) {
-            String base64 = imageService.getImageBase64(p.getImageURL());
-            ProductResponseDto prrDto = new ProductResponseDto();
-            prrDto.setId(p.getId());
-            prrDto.setName(p.getName());
-            prrDto.setCategory(p.getCategory());
-            prrDto.setDescription(p.getDescription());
-            prrDto.setImageBase64(base64);
-            prrDto.setPrice(p.getPrice());
-            productResponseDtos.add(prrDto);
+        List<ProductResponseDto> response = new ArrayList<>();
+        for (ProductDto productDto : products) {
+            response.add(productResponseMapper.toResponse(productDto));
         }
-        return new ResponseEntity<>(productResponseDtos, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<ProductResponseDto> createProduct(@ModelAttribute ProductRequestDto productRequestDto) {
-        ProductDto productDto = new ProductDto();
-        String fileName = imageService.uploadProductToMemory(productRequestDto.getImageFile());
-        productDto.setName(productRequestDto.getName());
-        productDto.setCategory(productRequestDto.getCategory());
-        productDto.setDescription(productRequestDto.getDescription());
-        productDto.setImageURL(fileName);
-
-        ProductDto savedProduct = productService.createProduct(productDto);
-
-        ProductResponseDto productResponseDto = new ProductResponseDto();
-        String base64 = imageService.getImageBase64(savedProduct.getImageURL());
-        productResponseDto.setName(savedProduct.getName());
-        productResponseDto.setCategory(savedProduct.getCategory());
-        productResponseDto.setDescription(savedProduct.getDescription());
-        productResponseDto.setImageBase64(base64);
-        productResponseDto.setPrice(savedProduct.getPrice());
-
-        return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
+        ProductDto saved = productService.createProduct(productRequestMapper.toDto(productRequestDto));
+        ProductResponseDto response = productResponseMapper.toResponse(saved);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

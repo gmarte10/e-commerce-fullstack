@@ -1,6 +1,7 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.orderItem.OrderItemDto;
+import com.giancarlos.exception.OrderItemNotFoundException;
 import com.giancarlos.mapper.orderItem.OrderItemMapper;
 import com.giancarlos.model.*;
 import com.giancarlos.repository.OrderItemRepository;
@@ -19,6 +20,11 @@ public class OrderItemService {
         this.orderItemRepository = orderItemRepository;
         this.orderItemMapper = orderItemMapper;
     }
+
+    public OrderItemDto getOrderItemById(Long orderItemId) {
+        return orderItemMapper.toDto(orderItemRepository.findById(orderItemId).orElseThrow());
+    }
+
     public List<OrderItemDto> getOrderItemsByOrderId(Long orderId) {
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
         List<OrderItemDto> orderItemDtos = new ArrayList<>();

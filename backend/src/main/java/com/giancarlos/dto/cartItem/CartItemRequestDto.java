@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemRequestDto {
-    private String userEmail;
+    private String email;
     private Long productId;
     private Integer quantity;
 }

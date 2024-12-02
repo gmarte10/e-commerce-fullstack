@@ -1,83 +1,53 @@
 package com.giancarlos.controller;
 
-import com.giancarlos.dto.*;
-import com.giancarlos.model.OrderItem;
-import com.giancarlos.model.Product;
-import com.giancarlos.model.User;
+import com.giancarlos.dto.order.OrderDto;
+import com.giancarlos.dto.order.OrderRequestDto;
+import com.giancarlos.dto.order.OrderResponseDto;
+import com.giancarlos.dto.user.UserDto;
+import com.giancarlos.mapper.order.OrderRequestMapper;
+import com.giancarlos.mapper.order.OrderResponseMapper;
 import com.giancarlos.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final OrderItemService orderItemService;
-    private final ProductService productService;
     private final UserService userService;
-    private final CartItemService cartItemService;
+    private final OrderResponseMapper orderResponseMapper;
+    private final OrderRequestMapper orderRequestMapper;
 
-    public OrderController(OrderItemService orderItemService, OrderService orderService, ProductService productService, UserService userService, CartItemService cartItemService) {
-        this.orderItemService = orderItemService;
+    public OrderController(OrderRequestMapper orderRequestMapper,
+                           OrderResponseMapper orderResponseMapper,
+                           OrderService orderService,
+                           UserService userService,
+                           CartItemService cartItemService) {
         this.orderService = orderService;
-        this.productService = productService;
         this.userService = userService;
-        this.cartItemService = cartItemService;
+        this.orderResponseMapper = orderResponseMapper;
+        this.orderRequestMapper = orderRequestMapper;
     }
 
     @GetMapping("/user/{email}")
-    public ResponseEntity<List<OrderDisplayDto>> getAllOrdersByUserEmail(@PathVariable String email) {
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByUserEmail(@PathVariable String email) {
         UserDto user = userService.getUserByEmail(email);
-        List<OrderDto> orderDtos = orderService.findByUserId(user.getId());
-        List<OrderDisplayDto> odDtos = new ArrayList<>();
-        for (OrderDto o : orderDtos) {
-            OrderDisplayDto od = new OrderDisplayDto();
-            od.setId(o.getId());
-            od.setDate(o.getCreatedAt().toString());
-            od.setTotal(o.getTotalAmount());
-            od.setAddress(user.getAddress());
-            odDtos.add(od);
+        List<OrderDto> orderDtos = orderService.getOrdersByUserId(user.getId());
+        List<OrderResponseDto> response = new ArrayList<>();
+        for (OrderDto orderDto : orderDtos) {
+            response.add(orderResponseMapper.toResponse(orderDto));
         }
-        return new ResponseEntity<>(odDtos, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<OrderResponseDto> addOrder(@RequestBody OrderRequestDto orderRequestDto) {
-        String email = orderRequestDto.getEmail();
-        UserDto user = userService.getUserByEmail(email);
-        List<OrderItemDto> orderItemDtos = new ArrayList<>();
-        OrderDto orderDto = new OrderDto();
-        orderDto.setCreatedAt(ZonedDateTime.now());
-        orderDto.setUserId(user.getId());
-        orderDto.setTotalAmount(orderRequestDto.getTotal());
-        OrderDto savedOrder = orderService.createOrder(orderDto);
-        System.out.println("!!!ORDER ID = " + savedOrder.getId());
-        for (Long cartItemId : orderRequestDto.getCartItemIds()) {
-            CartItemDto cartItemDto = cartItemService.findById(cartItemId);
-            ProductDto product = productService.findById(cartItemDto.getProductId());
-            OrderItemDto orderItemDto = new OrderItemDto();
-            orderItemDto.setOrderId(savedOrder.getId());
-            orderItemDto.setPrice(product.getPrice());
-            orderItemDto.setQuantity(cartItemDto.getQuantity());
-            orderItemDto.setProductId(product.getId());
-            OrderItemDto saved = orderItemService.addOrderItem(orderItemDto);
-            orderItemDtos.add(saved);
-        }
-        OrderResponseDto orderResponseDto = new OrderResponseDto();
-        List<Long> oItemIds = new ArrayList<>();
-        for (OrderItemDto o : orderItemDtos) {
-            oItemIds.add(o.getId());
-        }
-        orderResponseDto.setOrderItemIds(oItemIds);
-        orderResponseDto.setOrderId(orderDto.getId());
-
-        return new ResponseEntity<>(orderResponseDto, HttpStatus.CREATED);
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
+        OrderDto saved = orderService.createOrder(orderRequestMapper.toDto(orderRequestDto));
+        OrderResponseDto response = orderResponseMapper.toResponse(saved);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

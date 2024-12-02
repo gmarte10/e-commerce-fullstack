@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderRequestDto {
-    private Long userEmail;
-    private ZonedDateTime createdAt;
+    private String email;
     private List<Long> productIds;
 }

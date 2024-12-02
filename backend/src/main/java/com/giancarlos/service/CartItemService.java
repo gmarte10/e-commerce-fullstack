@@ -40,7 +40,16 @@ public class CartItemService {
         return cartItemMapper.toDto(cartItem);
     }
 
-    public List<CartItemDto> getCartItemByUserId(Long userId) {
+    public List<CartItemDto> getCartItemsByProductId(Long productId) {
+        List<CartItemDto> cartItemDtos = new ArrayList<>();
+        List<CartItem> cartItems = cartItemRepository.findByProductId(productId);
+        for (CartItem cartItem : cartItems) {
+            cartItemDtos.add(cartItemMapper.toDto(cartItem));
+        }
+        return cartItemDtos;
+    }
+
+    public List<CartItemDto> getCartItemsByUserId(Long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         List<CartItemDto> cartItemDtos = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
@@ -68,7 +77,7 @@ public class CartItemService {
     }
 
     @Transactional
-    public void clearUserCartItems(Long userId) {
+    public void removeCartItemsByUserId(Long userId) {
         cartItemRepository.deleteByUserId(userId);
     }
 

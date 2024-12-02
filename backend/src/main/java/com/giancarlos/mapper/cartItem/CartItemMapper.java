@@ -3,6 +3,7 @@ package com.giancarlos.mapper.cartItem;
 import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.exception.CartItemNotFoundException;
 import com.giancarlos.exception.UserNotFoundException;
+import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.mapper.user.UserMapper;
 import com.giancarlos.model.CartItem;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class CartItemMapper {
         return CartItemDto.builder()
                 .id(cartItem.getId())
                 .user(userMapper.toDto(cartItem.getUser()))
-                .product(productMapper.toDTO(cartItem.getProduct()))
+                .product(productMapper.toDto(cartItem.getProduct()))
                 .quantity(cartItem.getQuantity())
                 .build();
     }

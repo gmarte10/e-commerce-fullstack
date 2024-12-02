@@ -23,12 +23,12 @@ public class ImageService {
     @Value("${upload.dir:uploads}")
     private String uploadDir;
 
-    public String getImageBase64(String imageName) {
-        if (imageName == null || imageName.isEmpty()) {
-            throw new ImageNotFoundException("Image path was not found");
+    public String getImageBase64(String imageURL) {
+        if (imageURL == null || imageURL.isEmpty()) {
+            throw new ImageNotFoundException("Image url path was not found");
         }
         try {
-            Path uploadPath = Paths.get(getUploadDir, imageName);
+            Path uploadPath = Paths.get(getUploadDir, imageURL);
             System.out.println(uploadPath);
             // Verify the file exists and is within the uploads directory (security check)
             if (!Files.exists(uploadPath) || !uploadPath.normalize().startsWith(uploadPath.normalize())) {
@@ -41,7 +41,7 @@ public class ImageService {
             return "data:" + mimeType + ";base64," + base64Image;
 
         } catch (IOException e) {
-            log.error("Error reading image file: {}", imageName, e);
+            log.error("Error reading image file: {}", imageURL, e);
             throw new ImageNotFoundException("Reading image file went wrong");
         }
     }

@@ -1,5 +1,11 @@
 package com.giancarlos.controller;
 
+import com.giancarlos.dto.user.UserDto;
+import com.giancarlos.dto.user.UserLoginDto;
+import com.giancarlos.dto.user.UserRegisterDto;
+import com.giancarlos.dto.user.UserResponseDto;
+import com.giancarlos.mapper.user.UserRegisterMapper;
+import com.giancarlos.mapper.user.UserResponseMapper;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -12,26 +18,24 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    public UserController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private final UserRegisterMapper userRegisterMapper;
+    private final UserResponseMapper userResponseMapper;
+    public UserController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, UserRegisterMapper userRegisterMapper, UserResponseMapper userResponseMapper) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userRegisterMapper = userRegisterMapper;
         this.userService = userService;
+        this.userResponseMapper= userResponseMapper;
     }
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> register(@RequestBody RegisterRequestDto registerRequest) {
-        String encodedPassword=  bCryptPasswordEncoder.encode(registerRequest.getPassword());
-        UserDto registeredUser = userService.register(registerRequest.getUserDto(), encodedPassword);
-        UserResponseDto userResponseDto = UserResponseDto.builder()
-                .id(registeredUser.getId())
-                .name(registeredUser.getName())
-                .email(registeredUser.getEmail())
-                .address(registeredUser.getAddress())
-                .phone(registeredUser.getPhone())
-                .build();
-        return new ResponseEntity<>(userResponseDto, HttpStatus.CREATED);
+    public ResponseEntity<UserResponseDto> register(@RequestBody UserRegisterDto userRegisterDto) {
+        String encodedPassword=  bCryptPasswordEncoder.encode(userRegisterDto.getPassword());
+        UserDto saved = userService.register(userRegisterMapper.toDto(userRegisterDto), encodedPassword);
+        UserResponseDto response = userResponseMapper.toResponse(saved);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequest) {
-        return new ResponseEntity<>(userService.verify(loginRequest.getEmail(), loginRequest.getPassword()), HttpStatus.OK);
+    public ResponseEntity<String> login(@RequestBody UserLoginDto userLoginDto) {
+        return new ResponseEntity<>(userService.verify(userLoginDto.getEmail(), userLoginDto.getPassword()), HttpStatus.OK);
     }
 
     @GetMapping("/role/{email}")
