@@ -1,20 +1,7 @@
 package com.giancarlos.service;
 
-
-import com.giancarlos.dto.cartItem.CartItemDto;
-import com.giancarlos.exception.CartItemNotFoundException;
-import com.giancarlos.mapper.cartItem.CartItemMapper;
-import com.giancarlos.mapper.product.ProductMapper;
-import com.giancarlos.mapper.user.UserMapper;
-import com.giancarlos.model.CartItem;
 import com.giancarlos.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CartItemService {
@@ -42,7 +29,7 @@ public class CartItemService {
 
     public CartItemDto findById(Long cartId) {
         CartItem cartItem = cartItemRepository.findById(cartId).orElseThrow(() -> new CartItemNotFoundException("Cart Item was not found"));
-        CartItemDto cartItemDto = cartItemMapper.cartItemToCartItemDto(cartItem);
+
         CartItemDto cartItemDto = new CartItemDto();
         cartItemDto.setId(cartItem.getId());
         cartItemDto.setQuantity(cartItem.getQuantity());
