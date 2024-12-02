@@ -1,5 +1,6 @@
 package com.giancarlos.service;
 
+import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.exception.ProductNotFoundException;
 import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.Product;
@@ -58,23 +59,16 @@ public class ProductService {
         return productDtos;
     }
 
+    // Testing: check if productDto correctly converts to product
     public ProductDto createProduct(ProductDto productDto) {
         validateProduct(productDto);
-        return productMapper.toDTO(productRepository.save(productMapper.toEntity(productDto)));
+        Product product = productRepository.save(productMapper.toEntity(productDto));
+        return productMapper.toDTO(product);
     }
 
-    public void deleteProduct(String name) {
-        // Remember to delete cartItems and maybe orderItems
-        Product product = productMapper.toEntity(findByName(name));
-        productRepository.delete(product);
-    }
-
-    public ProductDto findByName(String name) {
-        Optional<Product> found = productRepository.findByName(name);
-        if (found.isEmpty()) {
-            throw new ProductNotFoundException("Product was not found");
-        }
-        return productMapper.toDTO(found.get());
+    // Testing: delete all cartItems and orderItems that contain the product
+    public void deleteProduct(Long productId) {
+        productRepository.deleteById(productId);
     }
 
     public ProductDto findById(Long id) {
