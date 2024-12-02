@@ -55,11 +55,14 @@ public class OrderService {
         orderDto.setCreatedAt(o.getCreatedAt());
         return orderDto;
     }
+
     public Order findOrderById2(Long orderId) {
         Optional<Order> order = orderRepository.findById(orderId);
         if (order.isEmpty()) {
             throw new OrderNotFoundException("Order was not found");
         }
+        Order ret = order.get();
+        System.out.println("Inside order service: " + ret.getId());
         return order.get();
     }
 

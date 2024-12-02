@@ -61,16 +61,18 @@ public class OrderItemService {
 
     public OrderItemDto addOrderItem(OrderItemDto orderItemDto) {
         OrderItem orderItem = new OrderItem();
-        Order order = orderService.findOrderById2(orderItem.getOrder().getId());
+        Order order = orderService.findOrderById2(orderItemDto.getOrderId());
         Product product = productMapper.toEntity(productService.findById(orderItemDto.getProductId()));
         orderItem.setOrder(order);
         orderItem.setProduct(product);
         orderItem.setQuantity(orderItemDto.getQuantity());
+        orderItem.setPrice(product.getPrice());
         OrderItem savedOrderItem = orderItemRepository.save(orderItem);
         OrderItemDto oiDto = new OrderItemDto();
         oiDto.setProductId(savedOrderItem.getProduct().getId());
         oiDto.setOrderId(savedOrderItem.getOrder().getId());
         oiDto.setQuantity(savedOrderItem.getQuantity());
+        oiDto.setPrice(savedOrderItem.getPrice());
         return oiDto;
     }
 }

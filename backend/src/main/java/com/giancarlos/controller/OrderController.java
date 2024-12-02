@@ -33,10 +33,19 @@ public class OrderController {
     }
 
     @GetMapping("/user/{email}")
-    public ResponseEntity<List<OrderDto>> getAllOrdersByUserEmail(@PathVariable String email) {
-        Long userId = userService.getUserByEmail(email).getId();
-        List<OrderDto> orderDtos = orderService.findByUserId(userId);
-        return new ResponseEntity<>(orderDtos, HttpStatus.OK);
+    public ResponseEntity<List<OrderDisplayDto>> getAllOrdersByUserEmail(@PathVariable String email) {
+        UserDto user = userService.getUserByEmail(email);
+        List<OrderDto> orderDtos = orderService.findByUserId(user.getId());
+        List<OrderDisplayDto> odDtos = new ArrayList<>();
+        for (OrderDto o : orderDtos) {
+            OrderDisplayDto od = new OrderDisplayDto();
+            od.setId(o.getId());
+            od.setDate(o.getCreatedAt().toString());
+            od.setTotal(o.getTotalAmount());
+            od.setAddress(user.getAddress());
+            odDtos.add(od);
+        }
+        return new ResponseEntity<>(odDtos, HttpStatus.OK);
     }
 
     @PostMapping("/add")
@@ -49,6 +58,7 @@ public class OrderController {
         orderDto.setUserId(user.getId());
         orderDto.setTotalAmount(orderRequestDto.getTotal());
         OrderDto savedOrder = orderService.createOrder(orderDto);
+        System.out.println("!!!ORDER ID = " + savedOrder.getId());
         for (Long cartItemId : orderRequestDto.getCartItemIds()) {
             CartItemDto cartItemDto = cartItemService.findById(cartItemId);
             ProductDto product = productService.findById(cartItemDto.getProductId());
