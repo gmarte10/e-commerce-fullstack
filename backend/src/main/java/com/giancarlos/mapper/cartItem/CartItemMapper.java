@@ -1,5 +1,6 @@
 package com.giancarlos.mapper.cartItem;
 
+import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.model.CartItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
