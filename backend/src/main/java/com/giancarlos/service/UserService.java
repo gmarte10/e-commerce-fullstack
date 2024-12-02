@@ -1,6 +1,8 @@
 package com.giancarlos.service;
 
+import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.exception.UserNotFoundException;
+import com.giancarlos.mapper.user.UserMapper;
 import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.repository.UserRepository;
@@ -39,7 +41,7 @@ public class UserService {
         User user = userMapper.toEntity(userDto);
         user.setPassword(encodedPassword);
         User savedUser = userRepository.save(user);
-        return userMapper.toDTO(savedUser);
+        return userMapper.toDto(savedUser);
     }
 
     public UserDto getUserByEmail(String email) {
@@ -47,7 +49,7 @@ public class UserService {
         if (user.isEmpty()) {
             throw new UserNotFoundException("User was not found by email");
         }
-        return userMapper.toDTO(user.get());
+        return userMapper.toDto(user.get());
     }
 
     public String verify(String email, String rawPassword) {
@@ -73,14 +75,14 @@ public class UserService {
         List<User> userList = userRepository.findAll();
         List<UserDto> userDtoList = new ArrayList<>();
         for (User u : userList) {
-            userDtoList.add(userMapper.toDTO(u));
+            userDtoList.add(userMapper.toDto(u));
         }
         return userDtoList;
     }
 
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found"));
-        return userMapper.toDTO(user);
+        return userMapper.toDto(user);
     }
 
     public User getUserModelById(Long id) {

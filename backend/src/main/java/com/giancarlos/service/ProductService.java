@@ -2,6 +2,7 @@ package com.giancarlos.service;
 
 import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.exception.ProductNotFoundException;
+import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.Product;
 import com.giancarlos.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -24,45 +25,36 @@ public class ProductService {
 
     public List<ProductDto> findAllProducts() {
         List<Product> products = productRepository.findAll();
-        List<ProductDto> productDtos = new ArrayList<>();
-        for (Product p : products) {
-            productDtos.add(productMapper.toDTO(p));
-        }
-        return productDtos;
+        return convertToProductDtoList(products);
     }
 
     public List<ProductDto> findByPriceLessThanEqual(BigDecimal price) {
         List<Product> products = productRepository.findByPriceLessThanEqual(price);
-        List<ProductDto> productDtos = new ArrayList<>();
-        for (Product p : products) {
-            productDtos.add(productMapper.toDTO(p));
-        }
-        return productDtos;
+        return convertToProductDtoList(products);
     }
 
     public List<ProductDto> findByCategoriesName(String categoryName) {
         List<Product> products = productRepository.findByCategory(categoryName);
-        List<ProductDto> productDtos = new ArrayList<>();
-        for (Product p : products) {
-            productDtos.add(productMapper.toDTO(p));
-        }
-        return productDtos;
+        return convertToProductDtoList(products);
     }
 
     public List<ProductDto> search(String search) {
         List<Product> products = productRepository.searchByNameAndCategory(search);
+        return convertToProductDtoList(products);
+    }
+
+    private List<ProductDto> convertToProductDtoList(List<Product> products) {
         List<ProductDto> productDtos = new ArrayList<>();
-        for (Product p : products) {
-            productDtos.add(productMapper.toDTO(p));
+        for (Product product : products) {
+            productDtos.add(productMapper.toDto(product));
         }
         return productDtos;
     }
 
-    // Testing: check if productDto correctly converts to product
     public ProductDto createProduct(ProductDto productDto) {
         validateProduct(productDto);
         Product product = productRepository.save(productMapper.toEntity(productDto));
-        return productMapper.toDTO(product);
+        return productMapper.toDto(product);
     }
 
     // Testing: delete all cartItems and orderItems that contain the product
@@ -73,9 +65,9 @@ public class ProductService {
     public ProductDto findById(Long id) {
         Optional<Product> found = productRepository.findById(id);
         if (found.isEmpty()) {
-            throw new ProductNotFoundException("Product was not found");
+            throw new ProductNotFoundException("Product was not found in ProductService findById");
         }
-        return productMapper.toDTO(found.get());
+        return productMapper.toDto(found.get());
     }
 
     private void validateProduct(ProductDto productDto) {

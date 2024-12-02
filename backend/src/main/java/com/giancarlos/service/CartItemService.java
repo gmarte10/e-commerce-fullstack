@@ -3,8 +3,9 @@ package com.giancarlos.service;
 import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.exception.CartItemNotFoundException;
+import com.giancarlos.mapper.cartItem.CartItemMapper;
+import com.giancarlos.mapper.user.UserMapper;
 import com.giancarlos.model.CartItem;
-import com.giancarlos.model.Product;
 import com.giancarlos.model.User;
 import com.giancarlos.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
@@ -18,62 +19,48 @@ import java.util.Optional;
 @Service
 public class CartItemService {
     private final CartItemRepository cartItemRepository;
-    private final ProductService productService;
     private final UserService userService;
     private final UserMapper userMapper;
-    private final ProductMapper productMapper;
     private final CartItemMapper cartItemMapper;
 
 
     public CartItemService(CartItemRepository cartItemRepository,
-                           ProductService productService,
                            UserService userService,
                            UserMapper userMapper,
-                           ProductMapper productMapper,
                            CartItemMapper cartItemMapper) {
         this.cartItemRepository = cartItemRepository;
         this.userService = userService;
         this.userMapper = userMapper;
-        this.productService = productService;
-        this.productMapper = productMapper;
         this.cartItemMapper = cartItemMapper;
     }
 
-    public CartItem convertDtoToModel(CartItemDto cartItemDto) {
-        CartItem cartItem = cartItemMapper.cartItemDtoToCartItem(cartItemDto);
-        User user = userService.convertDtoToModel(userService.getUserById(cartItemDto.getUserId()));
-        Product product =
-    }
 
     public CartItemDto getCartItemByCartId(Long cartId) {
         CartItem cartItem = cartItemRepository.findById(cartId).orElseThrow(() -> new CartItemNotFoundException("Cart Item was not found"));
-        return cartItemMapper.cartItemToCartItemDto(cartItem);
+        return cartItemMapper.toDto(cartItem);
     }
 
     public List<CartItemDto> getCartItemByUserId(Long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         List<CartItemDto> cartItemDtos = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
-            CartItemDto cartItemDto = cartItemMapper.cartItemToCartItemDto(cartItem);
+            CartItemDto cartItemDto = cartItemMapper.toDto(cartItem);
             cartItemDtos.add(cartItemDto);
         }
         return cartItemDtos;
     }
 
     public CartItemDto addCartItem(CartItemDto cartItemDto) {
-        User user = userMapper.userDtoToUser(userService.getUserById(cartItemDto.getUserId()));
-        Optional<CartItem> existingCartItem = cartItemRepository.findByUserIdAndProductId(user.getId(), cartItemDto.getProductId());
+        User user = userMapper.toEntity(userService.getUserById(cartItemDto.getUser().getId()));
+        Optional<CartItem> existingCartItem = cartItemRepository.findByUserIdAndProductId(user.getId(), cartItemDto.getProduct().getId());
         if (existingCartItem.isPresent()) {
             int newQuantity = existingCartItem.get().getQuantity() + cartItemDto.getQuantity();
             existingCartItem.get().setQuantity(newQuantity);
             CartItem savedCartItem = cartItemRepository.save(existingCartItem.get());
-            return cartItemMapper.cartItemToCartItemDto(savedCartItem);
+            return cartItemMapper.toDto(savedCartItem);
         }
-        Product product = productMapper.toEntity(productService.findById(cartItemDto.getProductId()));
-        CartItem cartItem = cartItemMapper.cartItemDtoToCartItem(cartItemDto);
-        cartItem.setUser(user);
-        cartItem.setProduct(product);
-        return cartItemMapper.cartItemToCartItemDto(cartItem);
+        CartItem cartItem = cartItemMapper.toEntity(cartItemDto);
+        return cartItemMapper.toDto(cartItem);
     }
 
     public BigDecimal getCartTotalCost(Long userId) {
