@@ -1,6 +1,5 @@
 package com.giancarlos.service;
 
-import com.giancarlos.mapper.UserMapper;
 import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.repository.UserRepository;
