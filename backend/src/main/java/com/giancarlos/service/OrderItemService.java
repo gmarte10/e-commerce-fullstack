@@ -1,9 +1,7 @@
 package com.giancarlos.service;
 
-import com.giancarlos.dto.CartItemDto;
-import com.giancarlos.dto.OrderDto;
 import com.giancarlos.dto.OrderItemDto;
-import com.giancarlos.mapper.ProductMapper;
+import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.*;
 import com.giancarlos.repository.OrderItemRepository;
 import org.springframework.stereotype.Service;

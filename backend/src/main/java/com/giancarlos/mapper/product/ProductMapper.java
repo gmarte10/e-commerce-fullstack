@@ -1,10 +1,9 @@
-package com.giancarlos.mapper;
+package com.giancarlos.mapper.product;
 
-import com.giancarlos.dto.ProductDto;
-import com.giancarlos.dto.UserDto;
+import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.model.Product;
-import com.giancarlos.model.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {

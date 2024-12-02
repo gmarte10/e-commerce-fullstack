@@ -3,7 +3,7 @@ package com.giancarlos.service;
 import com.giancarlos.dto.CartItemDto;
 import com.giancarlos.dto.UserDto;
 import com.giancarlos.exception.CartItemNotFoundException;
-import com.giancarlos.mapper.ProductMapper;
+import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.mapper.UserMapper;
 import com.giancarlos.model.CartItem;
 import com.giancarlos.model.Product;

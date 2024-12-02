@@ -2,13 +2,10 @@ package com.giancarlos.service;
 
 import com.giancarlos.dto.ProductDto;
 import com.giancarlos.exception.ProductNotFoundException;
-import com.giancarlos.mapper.ProductMapper;
+import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.Product;
 import com.giancarlos.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
