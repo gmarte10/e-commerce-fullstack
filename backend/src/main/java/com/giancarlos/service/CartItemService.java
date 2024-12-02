@@ -1,12 +1,8 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.cartItem.CartItemDto;
-import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.exception.CartItemNotFoundException;
-import com.giancarlos.mapper.cartItem.CartItemMapper;
-import com.giancarlos.mapper.product.ProductMapper;
-import com.giancarlos.mapper.user.UserMapper;
 import com.giancarlos.model.CartItem;
 import com.giancarlos.model.Product;
 import com.giancarlos.model.User;

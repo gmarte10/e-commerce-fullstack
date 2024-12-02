@@ -1,6 +1,7 @@
 package com.giancarlos.dto.user;
 
 import com.giancarlos.dto.cartItem.CartItemDto;
+import com.giancarlos.dto.order.OrderDto;
 import com.giancarlos.dto.orderItem.OrderItemDto;
 import com.giancarlos.model.UserRole;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,6 @@ public class UserDto {
     private UserRole role;
     private String address;
     private String phone;
-    private List<OrderItemDto> orderIds;
-    private List<CartItemDto> cartItemIds;
+    private List<OrderDto> orders;
+    private List<CartItemDto> cartItems;
 }

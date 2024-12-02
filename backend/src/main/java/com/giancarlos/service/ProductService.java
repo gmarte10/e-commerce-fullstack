@@ -2,7 +2,6 @@ package com.giancarlos.service;
 
 import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.exception.ProductNotFoundException;
-import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.Product;
 import com.giancarlos.repository.ProductRepository;
 import org.springframework.stereotype.Service;

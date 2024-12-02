@@ -1,13 +1,7 @@
 package com.giancarlos.service;
 
-import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.dto.order.OrderDto;
-import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.exception.OrderNotFoundException;
-import com.giancarlos.mapper.UserMapperImpl;
-import com.giancarlos.mapper.order.OrderMapper;
-import com.giancarlos.mapper.user.UserMapper;
-import com.giancarlos.model.CartItem;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.User;
 import com.giancarlos.repository.OrderRepository;

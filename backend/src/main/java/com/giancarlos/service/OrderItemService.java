@@ -1,6 +1,5 @@
 package com.giancarlos.service;
 
-import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.*;
 import com.giancarlos.repository.OrderItemRepository;
 import org.springframework.stereotype.Service;
