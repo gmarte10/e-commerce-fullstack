@@ -1,6 +1,5 @@
 package com.giancarlos.dto.cartItem;
 
-import com.giancarlos.dto.ProductResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

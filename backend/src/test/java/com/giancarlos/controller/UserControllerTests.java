@@ -2,8 +2,6 @@ package com.giancarlos.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.giancarlos.dto.RegisterRequestDto;
-import com.giancarlos.dto.UserDto;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.service.JwtService;
 import com.giancarlos.service.UserDetailService;

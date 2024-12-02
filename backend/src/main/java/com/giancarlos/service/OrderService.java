@@ -1,11 +1,7 @@
 package com.giancarlos.service;
 
-import com.giancarlos.dto.OrderDto;
-import com.giancarlos.dto.OrderItemDto;
-import com.giancarlos.dto.UserDto;
 import com.giancarlos.exception.OrderNotFoundException;
 import com.giancarlos.model.Order;
-import com.giancarlos.model.OrderItem;
 import com.giancarlos.model.User;
 import com.giancarlos.repository.OrderRepository;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,5 @@
 package com.giancarlos.mapper;
 
-import com.giancarlos.dto.ProductDto;
-import com.giancarlos.dto.ProductResponseDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

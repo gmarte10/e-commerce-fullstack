@@ -1,8 +1,5 @@
 package com.giancarlos.controller;
 
-import com.giancarlos.dto.ProductDto;
-import com.giancarlos.dto.ProductRequestDto;
-import com.giancarlos.dto.ProductResponseDto;
 import com.giancarlos.service.ImageService;
 import com.giancarlos.service.ProductService;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,5 @@
 package com.giancarlos.service;
 
-import com.giancarlos.dto.LoginRequestDto;
-import com.giancarlos.dto.RegisterRequestDto;
-import com.giancarlos.dto.UserDto;
 import com.giancarlos.mapper.UserMapper;
 import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
@@ -18,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

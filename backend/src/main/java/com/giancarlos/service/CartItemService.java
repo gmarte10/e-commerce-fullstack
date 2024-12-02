@@ -1,13 +1,12 @@
 package com.giancarlos.service;
 
-import com.giancarlos.dto.CartItemDto;
-import com.giancarlos.dto.UserDto;
+
+import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.exception.CartItemNotFoundException;
+import com.giancarlos.mapper.cartItem.CartItemMapper;
 import com.giancarlos.mapper.product.ProductMapper;
-import com.giancarlos.mapper.UserMapper;
+import com.giancarlos.mapper.user.UserMapper;
 import com.giancarlos.model.CartItem;
-import com.giancarlos.model.Product;
-import com.giancarlos.model.User;
 import com.giancarlos.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,25 +19,30 @@ import java.util.Optional;
 @Service
 public class CartItemService {
     private final CartItemRepository cartItemRepository;
-    private ProductService productService;
+    private final ProductService productService;
     private final UserService userService;
-    private UserMapper userMapper;
-    private ProductMapper productMapper;
+    private final UserMapper userMapper;
+    private final ProductMapper productMapper;
+    private final CartItemMapper cartItemMapper;
+
 
     public CartItemService(CartItemRepository cartItemRepository,
                            ProductService productService,
                            UserService userService,
                            UserMapper userMapper,
-                           ProductMapper productMapper) {
+                           ProductMapper productMapper,
+                           CartItemMapper cartItemMapper) {
         this.cartItemRepository = cartItemRepository;
         this.userService = userService;
         this.userMapper = userMapper;
         this.productService = productService;
         this.productMapper = productMapper;
+        this.cartItemMapper = cartItemMapper;
     }
 
-    public CartItemDto findById(Long id) {
-        CartItem cartItem = cartItemRepository.findById(id).orElseThrow(() -> new CartItemNotFoundException("Cart Item was not found"));
+    public CartItemDto findById(Long cartId) {
+        CartItem cartItem = cartItemRepository.findById(cartId).orElseThrow(() -> new CartItemNotFoundException("Cart Item was not found"));
+        CartItemDto cartItemDto = cartItemMapper.cartItemToCartItemDto(cartItem);
         CartItemDto cartItemDto = new CartItemDto();
         cartItemDto.setId(cartItem.getId());
         cartItemDto.setQuantity(cartItem.getQuantity());

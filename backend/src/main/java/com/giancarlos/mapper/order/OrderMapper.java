@@ -1,12 +1,7 @@
 package com.giancarlos.mapper.order;
 
-import com.giancarlos.dto.CartItemDto;
-import com.giancarlos.dto.OrderDto;
-import com.giancarlos.dto.OrderItemDto;
-import com.giancarlos.model.CartItem;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.OrderItem;
-import com.giancarlos.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

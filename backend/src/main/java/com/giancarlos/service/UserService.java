@@ -1,6 +1,5 @@
 package com.giancarlos.service;
 
-import com.giancarlos.dto.UserDto;
 import com.giancarlos.exception.UserNotFoundException;
 import com.giancarlos.mapper.UserMapper;
 import com.giancarlos.model.User;

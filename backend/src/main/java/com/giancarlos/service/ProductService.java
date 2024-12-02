@@ -1,6 +1,5 @@
 package com.giancarlos.service;
 
-import com.giancarlos.dto.ProductDto;
 import com.giancarlos.exception.ProductNotFoundException;
 import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.Product;
