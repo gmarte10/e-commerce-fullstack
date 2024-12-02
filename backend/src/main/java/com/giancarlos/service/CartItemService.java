@@ -43,12 +43,18 @@ public class CartItemService {
         this.cartItemMapper = cartItemMapper;
     }
 
-    public CartItemDto findByCartId(Long cartId) {
+    public CartItem convertDtoToModel(CartItemDto cartItemDto) {
+        CartItem cartItem = cartItemMapper.cartItemDtoToCartItem(cartItemDto);
+        User user = userService.convertDtoToModel(userService.getUserById(cartItemDto.getUserId()));
+        Product product =
+    }
+
+    public CartItemDto getCartItemByCartId(Long cartId) {
         CartItem cartItem = cartItemRepository.findById(cartId).orElseThrow(() -> new CartItemNotFoundException("Cart Item was not found"));
         return cartItemMapper.cartItemToCartItemDto(cartItem);
     }
 
-    public List<CartItemDto> findByUserId(Long userId) {
+    public List<CartItemDto> getCartItemByUserId(Long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         List<CartItemDto> cartItemDtos = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
@@ -74,8 +80,8 @@ public class CartItemService {
         return cartItemMapper.cartItemToCartItemDto(cartItem);
     }
 
-    public BigDecimal getCartTotal(Long userId) {
-        return cartItemRepository.getCartTotal(userId);
+    public BigDecimal getCartTotalCost(Long userId) {
+        return cartItemRepository.findTotalCostByUserId(userId);
     }
 
     @Transactional
@@ -85,7 +91,7 @@ public class CartItemService {
 
 
     @Transactional
-    public void removeProductFromCart(String email, Long productId) {
+    public void removeCartItemByEmailAndProductId(String email, Long productId) {
         UserDto user = userService.getUserByEmail(email);
         Optional<CartItem> cartItem = cartItemRepository.findByUserIdAndProductId(user.getId(), productId);
         if (cartItem.isEmpty()) {

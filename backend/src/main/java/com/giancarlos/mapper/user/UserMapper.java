@@ -1,5 +1,6 @@
 package com.giancarlos.mapper.user;
 
+import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.model.CartItem;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.User;

@@ -1,5 +1,7 @@
 package com.giancarlos.dto.orderItem;
 
+import com.giancarlos.dto.order.OrderDto;
+import com.giancarlos.dto.product.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +15,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class OrderItemDto {
     private Long id;
-    private Long orderId;
-    private Long productId;
+    private OrderDto order;
+    private ProductDto product;
     private Integer quantity;
     private BigDecimal price;
 }

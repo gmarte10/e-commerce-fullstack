@@ -24,6 +24,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
             "FROM CartItem ci " +
             "JOIN ci.product p " +
             "WHERE ci.user.id = :userId")
-    BigDecimal getCartTotal(@Param("userId") Long userId);
+    BigDecimal findTotalCostByUserId(@Param("userId") Long userId);
 
 }

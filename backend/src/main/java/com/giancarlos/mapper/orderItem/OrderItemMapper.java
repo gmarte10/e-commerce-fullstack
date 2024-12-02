@@ -1,5 +1,6 @@
 package com.giancarlos.mapper.orderItem;
 
+import com.giancarlos.dto.orderItem.OrderItemDto;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.OrderItem;
 import com.giancarlos.model.Product;
