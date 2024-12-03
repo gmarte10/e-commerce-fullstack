@@ -4,6 +4,7 @@ import com.giancarlos.dto.orderItem.OrderItemDto;
 import com.giancarlos.exception.OrderNotFoundException;
 import com.giancarlos.exception.UserNotFoundException;
 import com.giancarlos.mapper.order.OrderMapper;
+import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.OrderItem;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class OrderItemMapper {
                 .id(orderItem.getId())
                 .order(orderMapper.toDto(orderItem.getOrder()))
                 .price(orderItem.getPrice())
-                .product(productMapper.toDTO(orderItem.getProduct()))
+                .product(productMapper.toDto(orderItem.getProduct()))
                 .quantity(orderItem.getQuantity())
                 .build();
     }
