@@ -122,5 +122,4 @@ public class UserRepositoryTests {
         Assertions.assertThat(user.getId()).isGreaterThan(0L);
         Assertions.assertThat(found.getName()).isEqualTo("John Doe");
     }
-
 }
