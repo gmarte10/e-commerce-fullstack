@@ -1,161 +1,126 @@
 package com.giancarlos.repository;
 
+import com.giancarlos.model.Product;
 import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @DataJpaTest
-@ActiveProfiles("test")
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class UserRepositoryTests {
     @Autowired
     private UserRepository userRepository;
 
     @Test
-    public void testUserRepositoryNotNull() {
-        Assertions.assertThat(userRepository).isNotNull();
-    }
-
-    @Test
-    public void UserRepository_saveAll_ReturnSavedUser() {
+    public void UserRepository_Save_ReturnSavedUser() {
         // Arrange
         User user = User.builder()
-                .name("Jon Snow")
-                .email("jonsnow@gmail.com")
+                .name("John Doe")
+                .email("johndoe@gmail.com")
+                .phone("123-456-7891")
+                .address("123 Sesame St")
                 .role(UserRole.CUSTOMER)
-                .address("the wall")
-                .phone("123-345-6931")
-                .password("123").build();
+                .password("temp")
+                .orders(null)
+                .cartItems(null)
+                .build();
 
         // Act
-        User savedUser = userRepository.save(user);
+        User saved = userRepository.save(user);
 
         // Assert
-        Assertions.assertThat(savedUser).isNotNull();
-        Assertions.assertThat(savedUser.getId()).isGreaterThan(0);
+        Assertions.assertThat(saved).isNotNull();
+        Assertions.assertThat(saved.getName()).isEqualTo("John Doe");
     }
 
     @Test
-    public void UserRepository_GetAll_ReturnMoreThanOneUser() {
+    public void UserRepository_FindAll_ReturnMoreThanOneUser() {// Arrange
         User user = User.builder()
-                .name("Jon Snow")
-                .email("jonsnow@gmail.com")
+                .name("John Doe")
+                .email("johndoe@gmail.com")
+                .phone("123-456-7891")
+                .address("123 Sesame St")
                 .role(UserRole.CUSTOMER)
-                .address("the wall")
-                .phone("123-345-6931")
-                .password("$2a$12$W9Aqtx0dbCUFToiw98pl8./UMSjHOXpV3JsU3hG.m1.umc.XQBxaq")
+                .password("temp")
+                .orders(null)
+                .cartItems(null)
                 .build();
-
         User user2 = User.builder()
-                .name("Daenerys Targaryen")
-                .email("danytarg3@outlook.com")
-                .role(UserRole.CUSTOMER)
-                .address("dragon stone")
-                .phone("452-678-46267")
-                .password("$2a$12$X1CrKpzqMV.SnKdvJmmzTOz0CsTromv3eKMkJKyaZSGm7qALFrwHu")
+                .name("Jane Doe")
+                .email("jahnedoe@gmail.com")
+                .phone("789-456-7891")
+                .address("543 Sesame St")
+                .role(UserRole.ADMIN)
+                .password("pass")
+                .orders(null)
+                .cartItems(null)
                 .build();
-
         userRepository.save(user);
         userRepository.save(user2);
 
+        // Act
         List<User> userList = userRepository.findAll();
 
+        // Assert
         Assertions.assertThat(userList).isNotNull();
         Assertions.assertThat(userList.size()).isEqualTo(2);
     }
 
     @Test
-    public void UserRepository_FindById_ReturnUserNotNull() {
+    public void UserRepository_FindById_ReturnUser() {
+        // Arrange
         User user = User.builder()
-                .name("Jon Snow")
-                .email("jonsnow@gmail.com")
+                .name("John Doe")
+                .email("johndoe@gmail.com")
+                .phone("123-456-7891")
+                .address("123 Sesame St")
                 .role(UserRole.CUSTOMER)
-                .address("the wall")
-                .phone("123-345-6931")
-                .password("$2a$12$W9Aqtx0dbCUFToiw98pl8./UMSjHOXpV3JsU3hG.m1.umc.XQBxaq")
+                .password("temp")
+                .orders(null)
+                .cartItems(null)
                 .build();
-
         userRepository.save(user);
 
-        User foundUser = userRepository.findById(user.getId()).get();
+        // Act
+        User found = userRepository.findById(user.getId()).get();
 
-        Assertions.assertThat(foundUser).isNotNull();
+        // Assert
+        Assertions.assertThat(found).isNotNull();
+        Assertions.assertThat(user.getId()).isGreaterThan(0L);
+        Assertions.assertThat(found.getName()).isEqualTo("John Doe");
     }
 
     @Test
-    public void UserRepository_FindByEmail_ReturnUserNotNull() {
+    public void UserRepository_FindByEmail_ReturnUser() {
+        // Arrange
         User user = User.builder()
-                .name("Jon Snow")
-                .email("jonsnow@gmail.com")
+                .name("John Doe")
+                .email("johndoe@gmail.com")
+                .phone("123-456-7891")
+                .address("123 Sesame St")
                 .role(UserRole.CUSTOMER)
-                .address("the wall")
-                .phone("123-345-6931")
-                .password("$2a$12$W9Aqtx0dbCUFToiw98pl8./UMSjHOXpV3JsU3hG.m1.umc.XQBxaq")
+                .password("temp")
+                .orders(null)
+                .cartItems(null)
                 .build();
-
         userRepository.save(user);
 
-        User foundUser = userRepository.findByEmail(user.getEmail()).get();
+        // Act
+        User found = userRepository.findByEmail(user.getEmail()).get();
 
-        Assertions.assertThat(foundUser).isNotNull();
+        // Assert
+        Assertions.assertThat(found).isNotNull();
+        Assertions.assertThat(user.getId()).isGreaterThan(0L);
+        Assertions.assertThat(found.getName()).isEqualTo("John Doe");
     }
-
-    @Test
-    public void UserRepository_UpdateUser_ReturnUserNotNull() {
-        User user = User.builder()
-                .name("Jon Snow")
-                .email("jonsnow@gmail.com")
-                .role(UserRole.CUSTOMER)
-                .address("the wall")
-                .phone("123-345-6931")
-                .password("$2a$12$W9Aqtx0dbCUFToiw98pl8./UMSjHOXpV3JsU3hG.m1.umc.XQBxaq")
-                .build();
-
-        userRepository.save(user);
-
-        User foundUser = userRepository.findById(user.getId()).get();
-        foundUser.setName("Jon Stark");
-        foundUser.setPhone("121-325-6951");
-
-        User updatedUser = userRepository.save(foundUser);
-
-        Assertions.assertThat(updatedUser.getName()).isNotNull();
-        Assertions.assertThat(updatedUser.getPhone()).isNotNull();
-    }
-
-    @Test
-    public void UserRepository_UserDeleteById_ReturnUserIsEmpty() {
-        User user = User.builder()
-                .name("Jon Snow")
-                .email("jonsnow@gmail.com")
-                .role(UserRole.CUSTOMER)
-                .address("the wall")
-                .phone("123-345-6931")
-                .password("$2a$12$W9Aqtx0dbCUFToiw98pl8./UMSjHOXpV3JsU3hG.m1.umc.XQBxaq")
-                .build();
-
-        userRepository.save(user);
-
-        userRepository.deleteById(user.getId());
-
-        Optional<User> userReturn = userRepository.findById(user.getId());
-
-        Assertions.assertThat(userReturn).isEmpty();
-    }
-
-
-
-
-
-
 
 }

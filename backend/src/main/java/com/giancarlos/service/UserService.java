@@ -71,7 +71,7 @@ public class UserService {
         return user.map(User::getRole).orElse(null);
     }
 
-    public List<UserDto> getAllUsers() {
+    public List<UserDto> getUsers() {
         List<User> userList = userRepository.findAll();
         List<UserDto> userDtoList = new ArrayList<>();
         for (User u : userList) {
@@ -83,9 +83,5 @@ public class UserService {
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found"));
         return userMapper.toDto(user);
-    }
-
-    public User getUserModelById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found"));
     }
 }
