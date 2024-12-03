@@ -135,7 +135,7 @@ public class OrderRepositoryTests {
                 .createdAt(ZonedDateTime.now())
                 .totalAmount(BigDecimal.valueOf(150.75))
                 .build();
-        
+
         orderRepository.save(order);
 
         // Act
