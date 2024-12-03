@@ -1,7 +1,6 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.orderItem.OrderItemDto;
-import com.giancarlos.exception.OrderItemNotFoundException;
 import com.giancarlos.mapper.orderItem.OrderItemMapper;
 import com.giancarlos.model.*;
 import com.giancarlos.repository.OrderItemRepository;
@@ -43,7 +42,7 @@ public class OrderItemService {
         return orderItemDtos;
     }
 
-    public OrderItemDto addOrderItem(OrderItemDto orderItemDto) {
+    public OrderItemDto createOrderItem(OrderItemDto orderItemDto) {
         OrderItem savedOrderItem = orderItemRepository.save(orderItemMapper.toEntity(orderItemDto));
         return orderItemMapper.toDto(savedOrderItem);
     }
