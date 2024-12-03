@@ -68,7 +68,10 @@ public class UserService {
 
     public UserRole getUserRole(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        return user.map(User::getRole).orElse(null);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User was not found in UserService in getUserRole");
+        }
+        return user.get().getRole();
     }
 
     public List<UserDto> getUsers() {
@@ -81,7 +84,7 @@ public class UserService {
     }
 
     public UserDto getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found in UserService in GetUserById"));
         return userMapper.toDto(user);
     }
 }
