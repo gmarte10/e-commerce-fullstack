@@ -7,10 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    Optional<Product> findByName(String name);
 
     List<Product> findByPriceLessThanEqual(BigDecimal price);
 

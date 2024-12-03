@@ -30,7 +30,7 @@ public class ProductController {
 
     @GetMapping("/get-all")
     public ResponseEntity<List<ProductResponseDto>> getProducts() {
-        List<ProductDto> products = productService.findAllProducts();
+        List<ProductDto> products = productService.getProducts();
         List<ProductResponseDto> response = new ArrayList<>();
         for (ProductDto productDto : products) {
             response.add(productResponseMapper.toResponse(productDto));

@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-    boolean existsByUserId(Long userId);
 
     List<CartItem> findByUserId(Long userId);
 

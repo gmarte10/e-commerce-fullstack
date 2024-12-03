@@ -23,22 +23,22 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    public List<ProductDto> findAllProducts() {
+    public List<ProductDto> getProducts() {
         List<Product> products = productRepository.findAll();
         return convertToProductDtoList(products);
     }
 
-    public List<ProductDto> findByPriceLessThanEqual(BigDecimal price) {
+    public List<ProductDto> getProductsByPriceLessThanEqual(BigDecimal price) {
         List<Product> products = productRepository.findByPriceLessThanEqual(price);
         return convertToProductDtoList(products);
     }
 
-    public List<ProductDto> findByCategoriesName(String categoryName) {
+    public List<ProductDto> getProductsByCategoriesName(String categoryName) {
         List<Product> products = productRepository.findByCategory(categoryName);
         return convertToProductDtoList(products);
     }
 
-    public List<ProductDto> search(String search) {
+    public List<ProductDto> getProductsBySearch(String search) {
         List<Product> products = productRepository.searchByNameAndCategory(search);
         return convertToProductDtoList(products);
     }
