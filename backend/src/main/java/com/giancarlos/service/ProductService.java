@@ -33,7 +33,7 @@ public class ProductService {
         return convertToProductDtoList(products);
     }
 
-    public List<ProductDto> getProductsByCategoriesName(String categoryName) {
+    public List<ProductDto> getProductsByCategory(String categoryName) {
         List<Product> products = productRepository.findByCategory(categoryName);
         return convertToProductDtoList(products);
     }
@@ -58,7 +58,10 @@ public class ProductService {
     }
 
     // Testing: delete all cartItems and orderItems that contain the product
-    public void deleteProduct(Long productId) {
+    public void deleteProductById(Long productId) {
+        if (productRepository.findById(productId).isEmpty()) {
+            throw new ProductNotFoundException("Product could not be deleted in ProductService");
+        }
         productRepository.deleteById(productId);
     }
 
