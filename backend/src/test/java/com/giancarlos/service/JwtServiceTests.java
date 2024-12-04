@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,5 +79,11 @@ public class JwtServiceTests {
         Thread.sleep(200);
         Boolean isValid = jwtService.validateToken(token, userDetails);
         Assertions.assertThat(isValid).isFalse();
+    }
+
+    @Test
+    public void JwtService_ExtractUserName_ThrowException_InvalidToken() {
+        String invalidToken = "invalid.token.value";
+        assertThrows(Exception.class, () -> jwtService.extractUserName(invalidToken));
     }
 }
