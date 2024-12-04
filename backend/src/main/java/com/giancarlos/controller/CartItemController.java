@@ -4,6 +4,7 @@ import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.dto.cartItem.CartItemRequestDto;
 import com.giancarlos.dto.cartItem.CartItemResponseDto;
 import com.giancarlos.dto.product.ProductDto;
+import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.mapper.cartItem.CartItemRequestMapper;
 import com.giancarlos.mapper.cartItem.CartItemResponseMapper;
 import com.giancarlos.service.CartItemService;
@@ -50,14 +51,15 @@ public class CartItemController {
 
     @PostMapping("/add")
     public ResponseEntity<CartItemResponseDto> addCartItem(@RequestBody CartItemRequestDto cartItemRequestDto) {
-        CartItemDto saved = cartItemService.addCartItem(cartItemRequestMapper.toDto(cartItemRequestDto));
+        CartItemDto saved = cartItemService.createCartItem(cartItemRequestMapper.toDto(cartItemRequestDto));
         CartItemResponseDto response = cartItemResponseMapper.toResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/remove/{email}/{productId}")
     public ResponseEntity<String> removeCartItemByEmailAndProductId(@PathVariable String email, @PathVariable Long productId) {
-        cartItemService.removeCartItemByEmailAndProductId(email, productId);
+        UserDto userDto = userService.getUserByEmail(email);
+        ProductDto productDto = productService.getProductById(productId);
         String response = removeCartItemResponse(email, productId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

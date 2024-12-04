@@ -33,9 +33,7 @@ public class OrderItemServiceTests {
     private OrderItemService orderItemService;
 
     private OrderItem orderItem;
-    private OrderItem orderItem2;
     private OrderItemDto orderItemDto;
-    private OrderItemDto orderItemDto2;
 
     @BeforeEach
     public void init() {
@@ -45,12 +43,7 @@ public class OrderItemServiceTests {
                 .product(null)
                 .order(null)
                 .build();
-        orderItem2 = OrderItem.builder()
-                .price(BigDecimal.valueOf(12))
-                .quantity(7)
-                .product(null)
-                .order(null)
-                .build();
+
 
         orderItemDto = OrderItemDto.builder()
                 .price(BigDecimal.valueOf(45))
@@ -58,12 +51,7 @@ public class OrderItemServiceTests {
                 .product(null)
                 .order(null)
                 .build();
-        orderItemDto2 = OrderItemDto.builder()
-                .price(BigDecimal.valueOf(12))
-                .quantity(7)
-                .product(null)
-                .order(null)
-                .build();
+
     }
 
     @Test
