@@ -23,7 +23,7 @@ public class ProductRequestMapper {
                 .price(productRequestDto.getPrice())
                 .category(productRequestDto.getCategory())
                 .description(productRequestDto.getDescription())
-                .imageURL(imageService.uploadProductToMemory(productRequestDto.getImageFile()))
+                .imageURL(imageService.uploadProductImageToLocal(productRequestDto.getImageFile()))
                 .build();
     }
 }

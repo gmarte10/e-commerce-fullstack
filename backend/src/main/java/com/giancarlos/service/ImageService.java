@@ -53,11 +53,13 @@ public class ImageService {
         }
     }
 
-    public String uploadProductToMemory(MultipartFile imgFile) {
+    public String uploadProductImageToLocal(MultipartFile imgFile) {
         validateInput(imgFile, "No image MultipartFile provided");
 
         try {
-            Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
+            Path uploadPath = Paths.get(uploadDir).isAbsolute()
+                    ? Paths.get(uploadDir)
+                    : Paths.get(System.getProperty("user.dir"), uploadDir);
             createDirectoryIfNotExist(uploadPath);
 
             String uniqueName = generateUniqueFileName(imgFile.getOriginalFilename());
