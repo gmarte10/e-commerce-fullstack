@@ -17,60 +17,72 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class ImageService {
-    @Value("${upload.dir}")
-    private String getUploadDir;
 
     @Value("${upload.dir:uploads}")
     private String uploadDir;
 
-    public String getImageBase64(String imageURL) {
-        if (imageURL == null || imageURL.isEmpty()) {
-            throw new ImageNotFoundException("Image url path was not found");
-        }
+    public String getImageBase64(String imgURL) {
+        validateInput(imgURL, "Image URL path was not provided");
+
         try {
-            Path uploadPath = Paths.get(getUploadDir, imageURL);
-            System.out.println(uploadPath);
-            // Verify the file exists and is within the uploads directory (security check)
-            if (!Files.exists(uploadPath) || !uploadPath.normalize().startsWith(uploadPath.normalize())) {
-                throw new ImageNotFoundException("Image file not found or invalid path");
-            }
+            Path imgPath = Paths.get(uploadDir, imgURL).normalize();
+            verifyFilePath(imgPath);
+            byte[] imgBytes = Files.readAllBytes(imgPath);
+            String base64Img = Base64.getEncoder().encodeToString(imgBytes);
+            String mimeType = Files.probeContentType(imgPath);
 
-            byte[] imageBytes = Files.readAllBytes(uploadPath);
-            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-            String mimeType = Files.probeContentType(uploadPath);
-            return "data:" + mimeType + ";base64," + base64Image;
-
+            return String.format("data:%s;base64,%s", mimeType, base64Img);
         } catch (IOException e) {
-            log.error("Error reading image file: {}", imageURL, e);
-            throw new ImageNotFoundException("Reading image file went wrong");
+            log.error("Error reading image file: {}", imgURL, e);
+            throw new ImageNotFoundException("Failed to read image file");
         }
     }
 
-    public String uploadProductToMemory(MultipartFile imageFile) {
-        if (imageFile == null || imageFile.isEmpty()) {
-            throw new ImageNotFoundException("No image file provided");
+    private void verifyFilePath(Path filePath) {
+        if (!Files.exists(filePath) || !filePath.startsWith(Paths.get(uploadDir))) {
+            throw new ImageNotFoundException("Image file was not found or invalid path");
         }
+    }
+
+    private void validateInput(Object input, String eMsg) {
+        boolean isNull = input == null;
+        boolean isEmptyString = input instanceof String && ((String) input).isEmpty();
+        boolean isEmptyMultipartFile = input instanceof MultipartFile && ((MultipartFile) input).isEmpty();
+        if (isNull || isEmptyString || isEmptyMultipartFile) {
+            throw new ImageNotFoundException(eMsg);
+        }
+    }
+
+    public String uploadProductToMemory(MultipartFile imgFile) {
+        validateInput(imgFile, "No image MultipartFile provided");
+
         try {
             Path uploadPath = Paths.get(System.getProperty("user.dir"), uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            String originalFileName = imageFile.getOriginalFilename();
-            String fileExtension = "";
-            if (originalFileName != null && originalFileName.contains(".")) {
-                fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            }
-            String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
+            createDirectoryIfNotExist(uploadPath);
 
-            Path imagePath = uploadPath.resolve(uniqueFileName);
+            String uniqueName = generateUniqueFileName(imgFile.getOriginalFilename());
+            Path fPath = uploadPath.resolve(uniqueName);
 
             // Save the file
-            Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-            return uniqueFileName;
+            Files.copy(imgFile.getInputStream(), fPath, StandardCopyOption.REPLACE_EXISTING);
+            return uniqueName;
 
         } catch (IOException e) {
-            System.out.println("Error uploading image\n\n" + e);
-            throw new ImageNotFoundException("Uploading image went wrong");
+            log.error("Error uploading the image MultipartFile", e);
+            throw new ImageNotFoundException("Failed to upload image");
         }
+    }
+
+    private void createDirectoryIfNotExist(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+    }
+
+    private String generateUniqueFileName(String origName) {
+        String fExtension = (origName != null && origName.contains("."))
+                ? origName.substring(origName.lastIndexOf("."))
+                : "";
+        return UUID.randomUUID() + fExtension;
     }
 }
