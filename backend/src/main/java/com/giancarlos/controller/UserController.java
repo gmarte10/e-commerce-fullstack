@@ -6,8 +6,10 @@ import com.giancarlos.dto.user.UserRegisterDto;
 import com.giancarlos.dto.user.UserResponseDto;
 import com.giancarlos.mapper.user.UserRegisterMapper;
 import com.giancarlos.mapper.user.UserResponseMapper;
+import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.service.UserService;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,22 +40,10 @@ public class UserController {
         return new ResponseEntity<>(userService.verify(userLoginDto.getEmail(), userLoginDto.getPassword()), HttpStatus.OK);
     }
 
-    @GetMapping("/role/{email}")
-    public ResponseEntity<String> getRole(@PathVariable String email) {
-        UserRole userRole = userService.getUserRole(email);
-        String role = userRole.toString();
-        return new ResponseEntity<>(role,HttpStatus.OK);
-    }
-
-    @GetMapping("/id/{email}")
-    public ResponseEntity<Long> getUserId(@PathVariable String email) {
-        UserDto user  = userService.getUserByEmail(email);
-        return new ResponseEntity<>(user.getId(), HttpStatus.OK);
-    }
-
-    @GetMapping("/address/{email}")
-    public ResponseEntity<String> getUserAddress(@PathVariable String email) {
+    @GetMapping("/info/{email}")
+    public ResponseEntity<UserResponseDto> getUserInfo(@PathVariable String email) {
         UserDto user = userService.getUserByEmail(email);
-        return new ResponseEntity<>(user.getAddress(), HttpStatus.OK);
+        UserResponseDto response = userResponseMapper.toResponse(user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
