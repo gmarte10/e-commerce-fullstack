@@ -8,6 +8,7 @@ import com.giancarlos.mapper.orderItem.OrderItemMapper;
 import com.giancarlos.mapper.user.UserMapper;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.OrderItem;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class OrderMapper {
     private final UserMapper userMapper;
     private final OrderItemMapper orderItemMapper;
 
-    public OrderMapper(UserMapper userMapper, OrderItemMapper orderItemMapper) {
+    public OrderMapper(@Lazy UserMapper userMapper, OrderItemMapper orderItemMapper) {
         this.userMapper = userMapper;
         this.orderItemMapper = orderItemMapper;
     }

@@ -6,6 +6,7 @@ import com.giancarlos.exception.UserNotFoundException;
 import com.giancarlos.mapper.order.OrderMapper;
 import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.OrderItem;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +14,7 @@ public class OrderItemMapper {
     private final ProductMapper productMapper;
     private final OrderMapper orderMapper;
 
-    public OrderItemMapper(ProductMapper productMapper, OrderMapper orderMapper) {
+    public OrderItemMapper(@Lazy ProductMapper productMapper, @Lazy OrderMapper orderMapper) {
         this.productMapper = productMapper;
         this.orderMapper = orderMapper;
     }
