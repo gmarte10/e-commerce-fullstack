@@ -57,6 +57,9 @@ public class UserMapper {
     }
 
     private List<OrderDto> mapOrdersToDtos(List<Order> orders) {
+        if (orders == null) {
+            return null;
+        }
         List<OrderDto> orderDtos = new ArrayList<>();
         for (Order order : orders) {
             orderDtos.add(orderMapper.toDto(order));
@@ -65,6 +68,9 @@ public class UserMapper {
     }
 
     private List<CartItemDto> mapCartItemsToDtos(List<CartItem> cartItems) {
+        if (cartItems == null) {
+            return null;
+        }
         List<CartItemDto> cartItemDtos = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             cartItemDtos.add(cartItemMapper.toDto(cartItem));
@@ -73,6 +79,9 @@ public class UserMapper {
     }
 
     private List<Order> mapDtosToOrders(List<OrderDto> orderDtos) {
+        if (orderDtos == null) {
+            return null;
+        }
         List<Order> orders = new ArrayList<>();
         for (OrderDto orderDto : orderDtos) {
             orders.add(orderMapper.toEntity(orderDto));
@@ -81,6 +90,9 @@ public class UserMapper {
     }
 
     private List<CartItem> mapDtosToCartItems(List<CartItemDto> cartItemDtos) {
+        if (cartItemDtos == null) {
+            return null;
+        }
         List<CartItem> cartItems = new ArrayList<>();
         for (CartItemDto cartItemDto : cartItemDtos) {
             cartItems.add(cartItemMapper.toEntity(cartItemDto));
