@@ -22,7 +22,7 @@ public class OrderItemController {
         this.orderItemResponseMapper = orderItemResponseMapper;
     }
 
-    @GetMapping("/order/{id}")
+    @GetMapping("/get/{orderId}")
     public ResponseEntity<List<OrderItemResponseDto>> getOrderItemsByOrderId(@PathVariable Long orderId) {
         List<OrderItemDto> orderItemDtos = orderItemService.getOrderItemsByOrderId(orderId);
         List<OrderItemResponseDto> response = new ArrayList<>();
