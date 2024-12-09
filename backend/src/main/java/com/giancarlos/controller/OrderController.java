@@ -25,15 +25,14 @@ public class OrderController {
     public OrderController(OrderRequestMapper orderRequestMapper,
                            OrderResponseMapper orderResponseMapper,
                            OrderService orderService,
-                           UserService userService,
-                           CartItemService cartItemService) {
+                           UserService userService) {
         this.orderService = orderService;
         this.userService = userService;
         this.orderResponseMapper = orderResponseMapper;
         this.orderRequestMapper = orderRequestMapper;
     }
 
-    @GetMapping("/user/{email}")
+    @GetMapping("/get/{email}")
     public ResponseEntity<List<OrderResponseDto>> getOrdersByUserEmail(@PathVariable String email) {
         UserDto user = userService.getUserByEmail(email);
         List<OrderDto> orderDtos = orderService.getOrdersByUserId(user.getId());
@@ -44,7 +43,7 @@ public class OrderController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/create")
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
         OrderDto saved = orderService.createOrder(orderRequestMapper.toDto(orderRequestDto));
         OrderResponseDto response = orderResponseMapper.toResponse(saved);
