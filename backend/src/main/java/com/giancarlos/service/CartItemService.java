@@ -82,4 +82,13 @@ public class CartItemService {
             cartItemRepository.delete(cartItemMapper.toEntity(cartItemDto));
         }
     }
+
+    @Transactional
+    public CartItemDto getCartItemsByUserIdAndProductId(Long userId, Long productId) {
+        Optional<CartItem> cartItem = cartItemRepository.findByUserIdAndProductId(userId, productId);
+        if (cartItem.isEmpty()) {
+            throw new CartItemNotFoundException("Failed to find CartItem By UserId and ProductId");
+        }
+        return cartItemMapper.toDto(cartItem.get());
+    }
 }

@@ -104,6 +104,22 @@ public class CartItemServiceTests {
     }
 
     @Test
+    public void CartItemService_GetCartItemByUserIdAndProductId_ReturnCartItem() {
+        // Arrange
+        Long productId = 1L;
+        Long userId = 1L;
+        when(cartItemRepository.findByUserIdAndProductId(userId, productId)).thenReturn(Optional.ofNullable(cartItem));
+        when(cartItemMapper.toDto(Mockito.any(CartItem.class))).thenReturn(cartItemDto);
+
+        // Act
+        CartItemDto found = cartItemService.getCartItemsByUserIdAndProductId(userId, productId);
+
+        // Assert
+        Assertions.assertThat(found).isNotNull();
+        Assertions.assertThat(found).isEqualTo(cartItemDto);
+    }
+
+    @Test
     public void CartItemService_CreateCartItemExisting_ReturnCartItem() {
         when(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUser().getId(), cartItemDto.getProduct().getId()))
                 .thenReturn(Optional.ofNullable(cartItem));
