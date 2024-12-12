@@ -1,7 +1,4 @@
 package com.giancarlos.dto.order;
-
-import com.giancarlos.dto.orderItem.OrderItemDto;
-import com.giancarlos.dto.user.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderDto {
     private Long id;
-    private UserDto user;
+    private Long userId;
     private BigDecimal totalAmount;
     private ZonedDateTime createdAt;
-    private List<OrderItemDto> orderItems;
+    private List<Long> orderItemIds;
 }

@@ -3,8 +3,9 @@ package com.giancarlos.controller;
 import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.dto.product.ProductRequestDto;
 import com.giancarlos.dto.product.ProductResponseDto;
-import com.giancarlos.mapper.product.ProductRequestMapper;
 import com.giancarlos.mapper.product.ProductResponseMapper;
+import com.giancarlos.model.Product;
+import com.giancarlos.service.ImageService;
 import com.giancarlos.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +19,14 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
     private final ProductResponseMapper productResponseMapper;
-    private final ProductRequestMapper productRequestMapper;
+    private final ImageService imageService;
 
     public ProductController(ProductService productService,
                              ProductResponseMapper productResponseMapper,
-                             ProductRequestMapper productRequestMapper) {
+                             ImageService imageService) {
         this.productService = productService;
-        this.productRequestMapper = productRequestMapper;
         this.productResponseMapper = productResponseMapper;
+        this.imageService = imageService;
     }
 
     @GetMapping("/get-all")
@@ -40,7 +41,16 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto productRequestDto) {
-        ProductDto saved = productService.createProduct(productRequestMapper.toDto(productRequestDto));
+        Product product = Product.builder()
+                .name(productRequestDto.getName())
+                .price(productRequestDto.getPrice())
+                .category(productRequestDto.getCategory())
+                .description(productRequestDto.getDescription())
+                .imageURL(imageService.uploadProductImageToLocal(productRequestDto.getImageFile()))
+                .cartItems(new ArrayList<>())
+                .orderItems(new ArrayList<>())
+                .build();
+        ProductDto saved = productService.createProduct(product);
         ProductResponseDto response = productResponseMapper.toResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

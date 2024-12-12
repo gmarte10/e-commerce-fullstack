@@ -3,14 +3,19 @@ package com.giancarlos.controller;
 import com.giancarlos.dto.order.OrderDto;
 import com.giancarlos.dto.order.OrderRequestDto;
 import com.giancarlos.dto.order.OrderResponseDto;
+import com.giancarlos.dto.orderItem.OrderItemDto;
+import com.giancarlos.dto.orderItem.OrderItemRequestDto;
 import com.giancarlos.dto.user.UserDto;
-import com.giancarlos.mapper.order.OrderRequestMapper;
 import com.giancarlos.mapper.order.OrderResponseMapper;
+import com.giancarlos.model.Order;
+import com.giancarlos.model.OrderItem;
+import com.giancarlos.model.User;
 import com.giancarlos.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,16 +25,20 @@ public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
     private final OrderResponseMapper orderResponseMapper;
-    private final OrderRequestMapper orderRequestMapper;
+    private final OrderItemService orderItemService;
+    private final ProductService productService;
 
-    public OrderController(OrderRequestMapper orderRequestMapper,
-                           OrderResponseMapper orderResponseMapper,
+    public OrderController(OrderResponseMapper orderResponseMapper,
                            OrderService orderService,
-                           UserService userService) {
+                           UserService userService,
+                           OrderItemService orderItemService,
+                           ProductService productService) {
         this.orderService = orderService;
         this.userService = userService;
         this.orderResponseMapper = orderResponseMapper;
-        this.orderRequestMapper = orderRequestMapper;
+        this.orderItemService = orderItemService;
+        this.productService = productService;
+
     }
 
     @GetMapping("/get/{email}")
@@ -45,7 +54,29 @@ public class OrderController {
 
     @PostMapping("/create")
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
-        OrderDto saved = orderService.createOrder(orderRequestMapper.toDto(orderRequestDto));
+        Long userId = userService.getUserByEmail(orderRequestDto.getEmail()).getId();
+        User user = userService.getUserById(userId);
+        List<OrderItem> orderItems = new ArrayList<>();
+        Order order = Order.builder()
+                .user(user)
+                .createdAt(orderRequestDto.getCreatedAt())
+                .totalAmount(orderRequestDto.getTotalAmount())
+                .build();
+
+        OrderDto saved = orderService.createOrder(order);
+        for (OrderItemRequestDto requestDto : orderRequestDto.getOrderItemRequestDtos()) {
+            OrderItem orderItem = OrderItem.builder()
+                    .product(productService.getProductById(requestDto.getProductId()))
+                    .quantity(requestDto.getQuantity())
+                    .order(orderService.getOrderById(saved.getId()))
+                    .price(requestDto.getPrice().multiply(BigDecimal.valueOf(requestDto.getQuantity())))
+                    .build();
+            OrderItemDto orderItemDto = orderItemService.createOrderItem(orderItem);
+            orderItems.add(orderItemService.getOrderItemById(orderItemDto.getId()));
+        }
+        order = orderService.getOrderById(saved.getId());
+        order.setOrderItems(orderItems);
+        saved = orderService.createOrder(order);
         OrderResponseDto response = orderResponseMapper.toResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

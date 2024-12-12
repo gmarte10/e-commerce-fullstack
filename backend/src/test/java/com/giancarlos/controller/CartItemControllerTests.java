@@ -4,15 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.dto.cartItem.CartItemRequestDto;
 import com.giancarlos.dto.cartItem.CartItemResponseDto;
-import com.giancarlos.dto.order.OrderDto;
-import com.giancarlos.dto.order.OrderRequestDto;
-import com.giancarlos.dto.order.OrderResponseDto;
-import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.dto.user.UserDto;
-import com.giancarlos.mapper.cartItem.CartItemRequestMapper;
 import com.giancarlos.mapper.cartItem.CartItemResponseMapper;
-import com.giancarlos.mapper.order.OrderRequestMapper;
-import com.giancarlos.mapper.order.OrderResponseMapper;
+//import com.giancarlos.mapper.order.OrderRequestMapper;
+import com.giancarlos.model.CartItem;
 import com.giancarlos.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +39,6 @@ public class CartItemControllerTests {
 
     @MockBean
     private ProductService productService;
-
-    @MockBean
-    private CartItemRequestMapper cartItemRequestMapper;
 
     @MockBean
     private JwtService jwtService;
@@ -82,11 +74,18 @@ public class CartItemControllerTests {
     public void CartItemController_CreateCartItem_ReturnCartItemResponse() throws Exception {
         String email = "test@email.com";
         CartItemRequestDto cartItemRequestDto = CartItemRequestDto.builder().email(email).build();
-        CartItemDto cartItemDto = CartItemDto.builder().id(1L).build();
+        CartItemDto cartItemDto = CartItemDto.builder()
+                .id(1L)
+                .userId(1L)
+                .quantity(2)
+                .productId(1L)
+                .build();
+        UserDto userDto = UserDto.builder().id(1L).build();
+        CartItem cartItem = CartItem.builder().build();
         CartItemResponseDto cartItemResponseDto = CartItemResponseDto.builder().id(1L).build();
-        when(cartItemService.createCartItem(any(CartItemDto.class))).thenReturn(cartItemDto);
-        when(cartItemRequestMapper.toDto(cartItemRequestDto)).thenReturn(cartItemDto);
+        when(cartItemService.createCartItem(cartItem)).thenReturn(cartItemDto);
         when(cartItemResponseMapper.toResponse(cartItemDto)).thenReturn(cartItemResponseDto);
+        when(userService.getUserByEmail(email)).thenReturn(userDto);
 
         ResultActions resultActions = mockMvc.perform(post("/api/cart-items/create")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -95,9 +94,8 @@ public class CartItemControllerTests {
         resultActions.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L));
 
-        verify(cartItemService, times(1)).createCartItem(cartItemDto);
+        verify(cartItemService, times(1)).createCartItem(cartItem);
         verify(cartItemResponseMapper, times(1)).toResponse(cartItemDto);
-        verify(cartItemRequestMapper, times(1)).toDto(cartItemRequestDto);
     }
 
     @Test
@@ -107,7 +105,7 @@ public class CartItemControllerTests {
         CartItemDto cartItemDto = CartItemDto.builder().id(2L).build();
 
         when(userService.getUserByEmail(email)).thenReturn(userDto);
-        when(cartItemService.getCartItemsByUserIdAndProductId(1L, 2L)).thenReturn(cartItemDto);
+        when(cartItemService.getCartItemByUserIdAndProductId(1L, 2L)).thenReturn(cartItemDto);
 
         mockMvc.perform(delete("/api/cart-items/remove/{email}/{productId}", email, 2L)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -115,7 +113,7 @@ public class CartItemControllerTests {
                 .andExpect(content().string("CartItem Removed"));
 
         verify(userService, times(1)).getUserByEmail(email);
-        verify(cartItemService, times(1)).getCartItemsByUserIdAndProductId(1L, 2L);
+        verify(cartItemService, times(1)).getCartItemByUserIdAndProductId(1L, 2L);
 
 
     }

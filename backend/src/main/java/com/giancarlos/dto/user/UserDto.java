@@ -22,6 +22,6 @@ public class UserDto {
     private UserRole role;
     private String address;
     private String phone;
-    private List<OrderDto> orders;
-    private List<CartItemDto> cartItems;
+    private List<Long> orders;
+    private List<Long> cartItems;
 }

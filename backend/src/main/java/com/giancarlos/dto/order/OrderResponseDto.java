@@ -18,5 +18,5 @@ public class OrderResponseDto {
     private Long id;
     private BigDecimal totalAmount;
     private ZonedDateTime createdAt;
-    private List<OrderItemResponseDto> orderItems;
+    private List<Long> orderItemIds;
 }

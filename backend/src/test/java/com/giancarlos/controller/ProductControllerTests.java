@@ -1,31 +1,29 @@
 package com.giancarlos.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.dto.product.ProductRequestDto;
 import com.giancarlos.dto.product.ProductResponseDto;
-import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.mapper.product.ProductRequestMapper;
 import com.giancarlos.mapper.product.ProductResponseMapper;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import com.giancarlos.mapper.user.UserRegisterMapper;
-import com.giancarlos.mapper.user.UserResponseMapper;
+
+import com.giancarlos.model.Product;
+import com.giancarlos.service.ImageService;
 import com.giancarlos.service.JwtService;
 import com.giancarlos.service.ProductService;
-import com.giancarlos.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -51,6 +49,9 @@ public class ProductControllerTests {
 
     @MockBean
     private ProductResponseMapper productResponseMapper;
+
+    @MockBean
+    private ImageService imageService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -91,9 +92,10 @@ public class ProductControllerTests {
                 .price(BigDecimal.valueOf(32))
                 .build();
 
-        when(productService.createProduct(any(ProductDto.class))).thenReturn(productDto);
+        when(productService.createProduct(any(Product.class))).thenReturn(productDto);
         when(productRequestMapper.toDto(productRequestDto)).thenReturn(productDto);
         when(productResponseMapper.toResponse(productDto)).thenReturn(productResponseDto);
+        when(imageService.uploadProductImageToLocal(any(MultipartFile.class))).thenReturn("path");
 
         ResultActions resultActions = mockMvc.perform(post("/api/products/create")
                 .contentType(MediaType.APPLICATION_JSON)

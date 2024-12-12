@@ -1,7 +1,6 @@
 package com.giancarlos.mapper.user;
 
 import com.giancarlos.dto.user.UserDto;
-import com.giancarlos.dto.user.UserRegisterDto;
 import com.giancarlos.dto.user.UserResponseDto;
 import com.giancarlos.exception.UserNotFoundException;
 import org.springframework.stereotype.Component;

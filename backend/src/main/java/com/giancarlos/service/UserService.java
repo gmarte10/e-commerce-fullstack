@@ -37,9 +37,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public UserDto register(UserDto userDto, String encodedPassword) {
-        User user = userMapper.toEntity(userDto);
-        user.setPassword(encodedPassword);
+    public UserDto register(User user) {
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
     }
@@ -66,25 +64,7 @@ public class UserService {
         }
     }
 
-    public UserRole getUserRole(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("User was not found in UserService in getUserRole");
-        }
-        return user.get().getRole();
-    }
-
-    public List<UserDto> getUsers() {
-        List<User> userList = userRepository.findAll();
-        List<UserDto> userDtoList = new ArrayList<>();
-        for (User u : userList) {
-            userDtoList.add(userMapper.toDto(u));
-        }
-        return userDtoList;
-    }
-
-    public UserDto getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found in UserService in GetUserById"));
-        return userMapper.toDto(user);
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User could not be found in UserService in GetUserById"));
     }
 }

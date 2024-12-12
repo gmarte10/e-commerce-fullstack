@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CartItemDto {
     private Long id;
-    private UserDto user;
-    private ProductDto product;
+    private Long userId;
+    private Long productId;
     private Integer quantity;
 }

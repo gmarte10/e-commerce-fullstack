@@ -1,28 +1,22 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.cartItem.CartItemDto;
-import com.giancarlos.dto.orderItem.OrderItemDto;
-import com.giancarlos.dto.product.ProductDto;
-import com.giancarlos.dto.user.UserDto;
+import com.giancarlos.exception.CartItemNotFoundException;
 import com.giancarlos.mapper.cartItem.CartItemMapper;
 import com.giancarlos.model.CartItem;
-import com.giancarlos.model.OrderItem;
-import com.giancarlos.model.Product;
-import com.giancarlos.model.User;
 import com.giancarlos.repository.CartItemRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
@@ -39,149 +33,151 @@ public class CartItemServiceTests {
     @InjectMocks
     private CartItemService cartItemService;
 
-    private CartItem cartItem;
-    private CartItemDto cartItemDto;
-
-    @BeforeEach
-    public void init() {
-        cartItem = CartItem.builder()
-                .user(User.builder().id(1L).build())
-                .quantity(5)
-                .product(Product.builder().id(1L).build())
-                .build();
-        cartItemDto = CartItemDto.builder()
-                .user(UserDto.builder().id(1L).build())
-                .quantity(5)
-                .product(ProductDto.builder().id(1L).build())
-                .build();
-    }
-
     @Test
-    public void CartItemService_GetCartItemById_ReturnCartItem() {
-        // Arrange
-        Long id = 1L;
-        when(cartItemRepository.findById(id)).thenReturn(Optional.ofNullable(cartItem));
-        when(cartItemMapper.toDto(Mockito.any(CartItem.class))).thenReturn(cartItemDto);
-
-        // Act
-        CartItemDto found = cartItemService.getCartItemById(id);
-
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found).isEqualTo(cartItemDto);
-    }
-
-    @Test
-    public void CartItemService_GetCartItemByProductId_ReturnMoreThanOneCartItem() {
-        // Arrange
-        Long productId = 1L;
-        when(cartItemRepository.findByProductId(productId)).thenReturn(List.of(cartItem));
-        when(cartItemMapper.toDto(Mockito.any(CartItem.class))).thenReturn(cartItemDto);
-
-        // Act
-        List<CartItemDto> cartItemDtoList = cartItemService.getCartItemsByProductId(productId);
-
-        // Assert
-        Assertions.assertThat(cartItemDtoList).isNotNull();
-        Assertions.assertThat(cartItemDtoList.size()).isEqualTo(1);
-        Assertions.assertThat(cartItemDtoList.get(0)).isEqualTo(cartItemDto);
-    }
-
-    @Test
-    public void CartItemService_GetCartItemByUserId_ReturnMoreThanOneCartItem() {
-        // Arrange
-        Long productId = 1L;
-        when(cartItemRepository.findByUserId(productId)).thenReturn(List.of(cartItem));
-        when(cartItemMapper.toDto(Mockito.any(CartItem.class))).thenReturn(cartItemDto);
-
-        // Act
-        List<CartItemDto> cartItemDtoList = cartItemService.getCartItemsByUserId(productId);
-
-        // Assert
-        Assertions.assertThat(cartItemDtoList).isNotNull();
-        Assertions.assertThat(cartItemDtoList.size()).isEqualTo(1);
-        Assertions.assertThat(cartItemDtoList.get(0)).isEqualTo(cartItemDto);
-    }
-
-    @Test
-    public void CartItemService_GetCartItemByUserIdAndProductId_ReturnCartItem() {
-        // Arrange
-        Long productId = 1L;
+    void CartItemService_GetCartItemByUserId_ReturnMoreThanOneCartItem_Success() {
         Long userId = 1L;
-        when(cartItemRepository.findByUserIdAndProductId(userId, productId)).thenReturn(Optional.ofNullable(cartItem));
-        when(cartItemMapper.toDto(Mockito.any(CartItem.class))).thenReturn(cartItemDto);
+        List<CartItem> cartItems = new ArrayList<>();
+        CartItem cartItem = new CartItem();
+        cartItems.add(cartItem);
 
-        // Act
-        CartItemDto found = cartItemService.getCartItemsByUserIdAndProductId(userId, productId);
+        CartItemDto cartItemDto = new CartItemDto();
 
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found).isEqualTo(cartItemDto);
+        when(cartItemRepository.findByUserId(userId)).thenReturn(cartItems);
+        when(cartItemMapper.toDto(cartItem)).thenReturn(cartItemDto);
+
+        List<CartItemDto> result = cartItemService.getCartItemsByUserId(userId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.size()).isEqualTo(1);
+        verify(cartItemRepository, times(1)).findByUserId(userId);
+        verify(cartItemMapper, times(1)).toDto(cartItem);
     }
 
     @Test
-    public void CartItemService_CreateCartItemExisting_ReturnCartItem() {
-        when(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUser().getId(), cartItemDto.getProduct().getId()))
-                .thenReturn(Optional.ofNullable(cartItem));
-        when(cartItemRepository.save(Mockito.any(CartItem.class))).thenReturn(cartItem);
-        when(cartItemMapper.toDto(Mockito.any(CartItem.class))).thenReturn(cartItemDto);
+    void CartItemService_CreateCartItem_ReturnCartItem_NewCartItem() {
+        CartItem cartItem = new CartItem();
+        cartItem.setId(1L);
+        cartItem.setQuantity(1);
 
-        CartItemDto saved = cartItemService.createCartItem(cartItemDto);
+        CartItemDto cartItemDto = new CartItemDto();
 
-        Assertions.assertThat(saved).isNotNull();
-        Assertions.assertThat(saved.getQuantity()).isEqualTo(cartItemDto.getQuantity());
+        when(cartItemRepository.findById(cartItem.getId())).thenReturn(Optional.empty());
+        when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
+        when(cartItemMapper.toDto(cartItem)).thenReturn(cartItemDto);
+
+        CartItemDto result = cartItemService.createCartItem(cartItem);
+
+        Assertions.assertThat(result).isNotNull();
+        verify(cartItemRepository, times(1)).findById(cartItem.getId());
+        verify(cartItemRepository, times(1)).save(cartItem);
+        verify(cartItemMapper, times(1)).toDto(cartItem);
     }
 
     @Test
-    public void CartItemService_CreateCartItemNotExisting_ReturnCartItem() {
-        when(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUser().getId(), cartItemDto.getProduct().getId()))
-                .thenReturn(Optional.empty());
-        when(cartItemRepository.save(Mockito.any(CartItem.class))).thenReturn(cartItem);
-        when(cartItemMapper.toDto(Mockito.any(CartItem.class))).thenReturn(cartItemDto);
-        when(cartItemMapper.toEntity(Mockito.any(CartItemDto.class))).thenReturn(cartItem);
-        CartItemDto saved = cartItemService.createCartItem(cartItemDto);
+    void CartItemService_CreateCartItem_ReturnCartItem_ExistingCartItem() {
+        CartItem existingCartItem = new CartItem();
+        existingCartItem.setId(1L);
+        existingCartItem.setQuantity(2);
 
-        Assertions.assertThat(saved).isNotNull();
-        Assertions.assertThat(saved.getQuantity()).isEqualTo(cartItemDto.getQuantity());
+        CartItem newCartItem = new CartItem();
+        newCartItem.setId(1L);
+        newCartItem.setQuantity(3);
+
+        CartItem updatedCartItem = new CartItem();
+        updatedCartItem.setId(1L);
+        updatedCartItem.setQuantity(5);
+
+        CartItemDto cartItemDto = new CartItemDto();
+
+        when(cartItemRepository.findById(newCartItem.getId())).thenReturn(Optional.of(existingCartItem));
+        when(cartItemRepository.save(existingCartItem)).thenReturn(updatedCartItem);
+        when(cartItemMapper.toDto(updatedCartItem)).thenReturn(cartItemDto);
+
+        CartItemDto result = cartItemService.createCartItem(newCartItem);
+
+        Assertions.assertThat(result).isNotNull();
+        verify(cartItemRepository, times(1)).findById(newCartItem.getId());
+        verify(cartItemRepository, times(1)).save(existingCartItem);
+        verify(cartItemMapper, times(1)).toDto(updatedCartItem);
     }
 
     @Test
-    public void CartItemService_GetCartItemsTotalCost_ReturnBigDecimal() {
-        // Arrange
+    void CartItemService_RemoveCartItemsByUserId_ReturnNothing() {
         Long userId = 1L;
-        BigDecimal total = BigDecimal.valueOf(50);
-        when(cartItemRepository.findTotalCostByUserId(userId)).thenReturn(total);
 
-        // Act
-        BigDecimal totalCost = cartItemService.getCartItemsTotalCost(userId);
-
-        // Assert
-        Assertions.assertThat(totalCost).isNotNull();
-        Assertions.assertThat(totalCost).isEqualTo(total);
-    }
-
-    @Test
-    public void CartItemService_RemoveCartItemsByUserId_ReturnNothing() {
-        Long userId = 1L;
         doNothing().when(cartItemRepository).deleteByUserId(userId);
-        assertDoesNotThrow(() -> cartItemService.removeCartItemsByUserId(userId));
+
+        cartItemService.removeCartItemsByUserId(userId);
+
         verify(cartItemRepository, times(1)).deleteByUserId(userId);
     }
 
     @Test
-    public void CartItemService_RemoveCartItemMoreThanOneQuantity_ReturnNothing() {
-        when(cartItemRepository.save(Mockito.any(CartItem.class))).thenReturn(cartItem);
-        when(cartItemMapper.toEntity(cartItemDto)).thenReturn(cartItem);
-        assertDoesNotThrow(() -> cartItemService.removeCartItem(cartItemDto));
+    void CartItemService_RemoveCartItem_ReturnNothing_DecreaseQuantity() {
+        CartItemDto cartItemDto = new CartItemDto();
+        cartItemDto.setUserId(1L);
+        cartItemDto.setProductId(2L);
+        cartItemDto.setQuantity(2);
+
+        CartItem cartItem = new CartItem();
+        cartItem.setQuantity(2);
+
+        when(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()))
+                .thenReturn(Optional.of(cartItem));
+        when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
+
+        cartItemService.removeCartItem(cartItemDto);
+
+        Assertions.assertThat(cartItem.getQuantity()).isEqualTo(1);
         verify(cartItemRepository, times(1)).save(cartItem);
     }
 
     @Test
-    public void CartItemService_RemoveCartItemOneQuantity_ReturnNothing() {
+    void CartItemService_RemoveCartItem_ReturnNothing() {
+        CartItemDto cartItemDto = new CartItemDto();
+        cartItemDto.setUserId(1L);
+        cartItemDto.setProductId(2L);
         cartItemDto.setQuantity(1);
+
+        CartItem cartItem = new CartItem();
+
+        when(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()))
+                .thenReturn(Optional.of(cartItem));
+
         doNothing().when(cartItemRepository).delete(cartItem);
-        when(cartItemMapper.toEntity(cartItemDto)).thenReturn(cartItem);
-        assertDoesNotThrow(() -> cartItemService.removeCartItem(cartItemDto));
+
+        cartItemService.removeCartItem(cartItemDto);
+
         verify(cartItemRepository, times(1)).delete(cartItem);
+    }
+
+    @Test
+    void CartItemService_GetCartItemByUserIdAndProductId_ReturnCartItem_Success() {
+        Long userId = 1L;
+        Long productId = 2L;
+
+        CartItem cartItem = new CartItem();
+        CartItemDto cartItemDto = new CartItemDto();
+
+        when(cartItemRepository.findByUserIdAndProductId(userId, productId)).thenReturn(Optional.of(cartItem));
+        when(cartItemMapper.toDto(cartItem)).thenReturn(cartItemDto);
+
+        CartItemDto result = cartItemService.getCartItemByUserIdAndProductId(userId, productId);
+
+        Assertions.assertThat(result).isNotNull();
+        verify(cartItemRepository, times(1)).findByUserIdAndProductId(userId, productId);
+        verify(cartItemMapper, times(1)).toDto(cartItem);
+    }
+
+    @Test
+    void CartItemService_GetCartItemByUserIdAndProductId_ReturnCartItem_NotFound() {
+        Long userId = 1L;
+        Long productId = 2L;
+
+        when(cartItemRepository.findByUserIdAndProductId(userId, productId)).thenReturn(Optional.empty());
+
+        assertThrows(CartItemNotFoundException.class, () -> cartItemService.getCartItemByUserIdAndProductId(userId, productId));
+
+        verify(cartItemRepository, times(1)).findByUserIdAndProductId(userId, productId);
     }
 }

@@ -1,6 +1,7 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.product.ProductDto;
+import com.giancarlos.exception.OrderNotFoundException;
 import com.giancarlos.exception.ProductNotFoundException;
 import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.Product;
@@ -28,16 +29,6 @@ public class ProductService {
         return convertToProductDtoList(products);
     }
 
-    public List<ProductDto> getProductsByPriceLessThanEqual(BigDecimal price) {
-        List<Product> products = productRepository.findByPriceLessThanEqual(price);
-        return convertToProductDtoList(products);
-    }
-
-    public List<ProductDto> getProductsByCategory(String categoryName) {
-        List<Product> products = productRepository.findByCategory(categoryName);
-        return convertToProductDtoList(products);
-    }
-
     public List<ProductDto> getProductsBySearch(String search) {
         List<Product> products = productRepository.searchByNameAndCategory(search);
         return convertToProductDtoList(products);
@@ -51,26 +42,18 @@ public class ProductService {
         return productDtos;
     }
 
-    public ProductDto createProduct(ProductDto productDto) {
-        validateProduct(productDto);
-        Product product = productRepository.save(productMapper.toEntity(productDto));
-        return productMapper.toDto(product);
+    public ProductDto createProduct(Product product) {
+        validateProduct(productMapper.toDto(product));
+        Product saved = productRepository.save(product);
+        return productMapper.toDto(saved);
     }
 
-    // Testing: delete all cartItems and orderItems that contain the product
-    public void deleteProductById(Long productId) {
-        if (productRepository.findById(productId).isEmpty()) {
-            throw new ProductNotFoundException("Product could not be deleted in ProductService");
-        }
-        productRepository.deleteById(productId);
-    }
-
-    public ProductDto getProductById(Long id) {
+    public Product getProductById(Long id) {
         Optional<Product> found = productRepository.findById(id);
         if (found.isEmpty()) {
             throw new ProductNotFoundException("Product was not found in ProductService findById");
         }
-        return productMapper.toDto(found.get());
+        return found.get();
     }
 
     private void validateProduct(ProductDto productDto) {

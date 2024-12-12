@@ -2,6 +2,7 @@ package com.giancarlos.service;
 
 import com.giancarlos.dto.order.OrderDto;
 import com.giancarlos.dto.orderItem.OrderItemDto;
+import com.giancarlos.exception.OrderItemNotFoundException;
 import com.giancarlos.mapper.orderItem.OrderItemMapper;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.OrderItem;
@@ -13,103 +14,99 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderItemServiceTests {
     @Mock
-    private OrderItemMapper orderItemMapper;
+    private OrderItemRepository orderItemRepository;
 
     @Mock
-    private OrderItemRepository orderItemRepository;
+    private OrderItemMapper orderItemMapper;
 
     @InjectMocks
     private OrderItemService orderItemService;
 
-    private OrderItem orderItem;
-    private OrderItemDto orderItemDto;
+    @Test
+    void OrderItemService_GetOrderItemById_ReturnOrderItemDto_Success() {
+        Long orderItemId = 1L;
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(orderItemId);
 
-    @BeforeEach
-    public void init() {
-        orderItem = OrderItem.builder()
-                .price(BigDecimal.valueOf(45))
-                .quantity(4)
-                .product(null)
-                .order(null)
-                .build();
+        when(orderItemRepository.findById(orderItemId)).thenReturn(Optional.of(orderItem));
 
+        OrderItem result = orderItemService.getOrderItemById(orderItemId);
 
-        orderItemDto = OrderItemDto.builder()
-                .price(BigDecimal.valueOf(45))
-                .quantity(4)
-                .product(null)
-                .order(null)
-                .build();
-
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isEqualTo(orderItemId);
+        verify(orderItemRepository, times(1)).findById(orderItemId);
     }
 
     @Test
-    public void OrderItemService_GetOrderItemById_ReturnOrderItem() {
-        // Arrange
-        Long id = 1L;
-        when(orderItemRepository.findById(id)).thenReturn(Optional.ofNullable(orderItem));
-        when(orderItemMapper.toDto(Mockito.any(OrderItem.class))).thenReturn(orderItemDto);
+    void OrderItemService_GetOrderItemById_ReturnOrderItemDto_NotFound() {
+        Long orderItemId = 1L;
 
-        // Act
-        OrderItemDto found = orderItemService.getOrderItemById(id);
+        when(orderItemRepository.findById(orderItemId)).thenReturn(Optional.empty());
 
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found).isEqualTo(orderItemDto);
+        assertThrows(OrderItemNotFoundException.class, () -> orderItemService.getOrderItemById(orderItemId));
+        verify(orderItemRepository, times(1)).findById(orderItemId);
     }
 
     @Test
-    public void OrderItemService_GetOrderItemsByOrderId_ReturnMoreThanOneOrderItem() {
-        // Arrange
+    void OrderItemService_GetOrderItemsByOrderId_ReturnMoreThanOneOrderItem_Success() {
         Long orderId = 1L;
-        when(orderItemRepository.findByOrderId(orderId)).thenReturn(List.of(orderItem));
-        when(orderItemMapper.toDto(Mockito.any(OrderItem.class))).thenReturn(orderItemDto);
+        List<OrderItem> orderItems = new ArrayList<>();
+        OrderItem orderItem = new OrderItem();
+        orderItems.add(orderItem);
 
-        // Act
-        List<OrderItemDto> orderDtoList = orderItemService.getOrderItemsByOrderId(orderId);
+        OrderItemDto orderItemDto = new OrderItemDto();
 
-        // Assert
-        Assertions.assertThat(orderDtoList).isNotNull();
-        Assertions.assertThat(orderDtoList.size()).isEqualTo(1);
-        Assertions.assertThat(orderDtoList.get(0)).isEqualTo(orderItemDto);
+        when(orderItemRepository.findByOrderId(orderId)).thenReturn(orderItems);
+        when(orderItemMapper.toDto(orderItem)).thenReturn(orderItemDto);
+
+        List<OrderItemDto> result = orderItemService.getOrderItemsByOrderId(orderId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.size()).isEqualTo(1);
+        verify(orderItemRepository, times(1)).findByOrderId(orderId);
+        verify(orderItemMapper, times(1)).toDto(orderItem);
     }
 
     @Test
-    public void OrderItemService_GetOrderItemsByProductId_ReturnMoreThanOneOrderItem() {
-        // Arrange
-        Long productId = 1L;
-        when(orderItemRepository.findByProductId(productId)).thenReturn(List.of(orderItem));
-        when(orderItemMapper.toDto(Mockito.any(OrderItem.class))).thenReturn(orderItemDto);
+    void OrderItemService_GetOrderItemsByOrderId_ReturnMoreThanOneOrderItem_EmptyList() {
+        Long orderId = 1L;
 
-        // Act
-        List<OrderItemDto> orderDtoList = orderItemService.getOrderItemsByProductId(productId);
+        when(orderItemRepository.findByOrderId(orderId)).thenReturn(new ArrayList<>());
 
-        // Assert
-        Assertions.assertThat(orderDtoList).isNotNull();
-        Assertions.assertThat(orderDtoList.size()).isEqualTo(1);
-        Assertions.assertThat(orderDtoList.get(0)).isEqualTo(orderItemDto);
+        List<OrderItemDto> result = orderItemService.getOrderItemsByOrderId(orderId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isEmpty()).isTrue();
+        verify(orderItemRepository, times(1)).findByOrderId(orderId);
     }
 
     @Test
-    public void OrderItemService_CreateOrderItem_ReturnOrderItem() {
-        when(orderItemRepository.save(Mockito.any(OrderItem.class))).thenReturn(orderItem);
-        when(orderItemMapper.toEntity(Mockito.any(OrderItemDto.class))).thenReturn(orderItem);
-        when(orderItemMapper.toDto(Mockito.any(OrderItem.class))).thenReturn(orderItemDto);
-        OrderItemDto saved = orderItemService.createOrderItem(orderItemDto);
+    void OrderItemService_CreateOrderItem_ReturnOrderItem_Success() {
+        OrderItem orderItem = new OrderItem();
+        OrderItem savedOrderItem = new OrderItem();
+        OrderItemDto orderItemDto = new OrderItemDto();
 
-        Assertions.assertThat(saved).isNotNull();
-        Assertions.assertThat(saved.getPrice()).isEqualTo(orderItemDto.getPrice());
+        when(orderItemRepository.save(orderItem)).thenReturn(savedOrderItem);
+        when(orderItemMapper.toDto(savedOrderItem)).thenReturn(orderItemDto);
+
+        OrderItemDto result = orderItemService.createOrderItem(orderItem);
+
+        Assertions.assertThat(result).isNotNull();
+        verify(orderItemRepository, times(1)).save(orderItem);
+        verify(orderItemMapper, times(1)).toDto(savedOrderItem);
     }
-
 }

@@ -8,7 +8,6 @@ import com.giancarlos.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,26 +17,10 @@ public class CartItemService {
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
 
-
     public CartItemService(CartItemRepository cartItemRepository,
                            CartItemMapper cartItemMapper) {
         this.cartItemRepository = cartItemRepository;
         this.cartItemMapper = cartItemMapper;
-    }
-
-
-    public CartItemDto getCartItemById(Long cartId) {
-        CartItem cartItem = cartItemRepository.findById(cartId).orElseThrow(() -> new CartItemNotFoundException("Cart Item was not found"));
-        return cartItemMapper.toDto(cartItem);
-    }
-
-    public List<CartItemDto> getCartItemsByProductId(Long productId) {
-        List<CartItemDto> cartItemDtos = new ArrayList<>();
-        List<CartItem> cartItems = cartItemRepository.findByProductId(productId);
-        for (CartItem cartItem : cartItems) {
-            cartItemDtos.add(cartItemMapper.toDto(cartItem));
-        }
-        return cartItemDtos;
     }
 
     public List<CartItemDto> getCartItemsByUserId(Long userId) {
@@ -50,20 +33,16 @@ public class CartItemService {
         return cartItemDtos;
     }
 
-    public CartItemDto createCartItem(CartItemDto cartItemDto) {
-        Optional<CartItem> existingCartItem = cartItemRepository.findByUserIdAndProductId(cartItemDto.getUser().getId(), cartItemDto.getProduct().getId());
+    public CartItemDto createCartItem(CartItem cartItem) {
+        Optional<CartItem> existingCartItem = cartItemRepository.findByUserIdAndProductId(cartItem.getUser().getId(), cartItem.getProduct().getId());
         if (existingCartItem.isPresent()) {
-            int newQuantity = existingCartItem.get().getQuantity() + cartItemDto.getQuantity();
+            int newQuantity = existingCartItem.get().getQuantity() + cartItem.getQuantity();
             existingCartItem.get().setQuantity(newQuantity);
             CartItem savedCartItem = cartItemRepository.save(existingCartItem.get());
             return cartItemMapper.toDto(savedCartItem);
         }
-        CartItem cartItem = cartItemRepository.save(cartItemMapper.toEntity(cartItemDto));
-        return cartItemMapper.toDto(cartItem);
-    }
-
-    public BigDecimal getCartItemsTotalCost(Long userId) {
-        return cartItemRepository.findTotalCostByUserId(userId);
+        CartItem saved = cartItemRepository.save(cartItem);
+        return cartItemMapper.toDto(saved);
     }
 
     @Transactional
@@ -75,16 +54,17 @@ public class CartItemService {
     @Transactional
     public void removeCartItem(CartItemDto cartItemDto) {
         if (cartItemDto.getQuantity() > 1) {
-            cartItemDto.setQuantity(cartItemDto.getQuantity() - 1);
-            cartItemRepository.save(cartItemMapper.toEntity(cartItemDto));
+            CartItem cartItem = cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()).orElseThrow();
+            cartItem.setQuantity(cartItemDto.getQuantity() - 1);
+            cartItemRepository.save(cartItem);
         }
         else {
-            cartItemRepository.delete(cartItemMapper.toEntity(cartItemDto));
+            cartItemRepository.delete(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()).orElseThrow());
         }
     }
 
     @Transactional
-    public CartItemDto getCartItemsByUserIdAndProductId(Long userId, Long productId) {
+    public CartItemDto getCartItemByUserIdAndProductId(Long userId, Long productId) {
         Optional<CartItem> cartItem = cartItemRepository.findByUserIdAndProductId(userId, productId);
         if (cartItem.isEmpty()) {
             throw new CartItemNotFoundException("Failed to find CartItem By UserId and ProductId");

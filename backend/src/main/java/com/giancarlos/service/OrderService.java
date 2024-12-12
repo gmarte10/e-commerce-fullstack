@@ -30,18 +30,16 @@ public class OrderService {
         return orderDtos;
     }
 
-    public OrderDto getOrderById(Long orderId) {
+    public Order getOrderById(Long orderId) {
         Optional<Order> order = orderRepository.findById(orderId);
         if (order.isEmpty()) {
             throw new OrderNotFoundException("Order was not found in OrderService getOrderById");
         }
-        return orderMapper.toDto(order.get());
+        return order.get();
     }
 
-    public OrderDto createOrder(OrderDto orderDto) {
-        Order order = orderMapper.toEntity(orderDto);
+    public OrderDto createOrder(Order order) {
         Order saved = orderRepository.save(order);
         return orderMapper.toDto(saved);
     }
-
 }

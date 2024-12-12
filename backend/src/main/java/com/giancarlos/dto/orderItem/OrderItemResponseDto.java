@@ -15,7 +15,10 @@ import java.math.BigDecimal;
 public class OrderItemResponseDto {
     private Long id;
     private Long orderId;
-    private ProductResponseDto product;
-    private Integer quantity;
+    private String name;
+    private String category;
+    private String description;
     private BigDecimal price;
+    private String imgBase64;
+    private Integer quantity;
 }

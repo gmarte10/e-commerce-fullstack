@@ -12,8 +12,8 @@ public class ProductRequestMapper {
 
     public ProductRequestMapper(ImageService imageService) {
         this.imageService = imageService;
-
     }
+
     public ProductDto toDto(ProductRequestDto productRequestDto) {
         if (productRequestDto == null) {
             throw new ProductNotFoundException("ProductRequestDto is null in ProductRequestMapper in toDto");

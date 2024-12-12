@@ -2,6 +2,7 @@ package com.giancarlos.service;
 
 import com.giancarlos.dto.order.OrderDto;
 import com.giancarlos.dto.user.UserDto;
+import com.giancarlos.exception.OrderNotFoundException;
 import com.giancarlos.mapper.order.OrderMapper;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.User;
@@ -15,14 +16,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTests {
@@ -35,83 +39,77 @@ public class OrderServiceTests {
     @InjectMocks
     private OrderService orderService;
 
-    private Order order;
-    private Order order2;
-    private OrderDto orderDto;
-    private OrderDto orderDto2;
-
-    @BeforeEach
-    public void init() {
-
-
-        order = Order.builder()
-                .user(User.builder().id(1L).build())
-                .orderItems(null)
-                .createdAt(ZonedDateTime.now().plusHours(10))
-                .totalAmount(BigDecimal.valueOf(150.75))
-                .build();
-
-        order2 = Order.builder()
-                .user(User.builder().id(2L).build())
-                .orderItems(null)
-                .createdAt(ZonedDateTime.now())
-                .totalAmount(BigDecimal.valueOf(20145.75))
-                .build();
-
-        orderDto = OrderDto.builder()
-                .user(UserDto.builder().id(1L).build())
-                .orderItems(null)
-                .createdAt(ZonedDateTime.now().plusHours(10))
-                .totalAmount(BigDecimal.valueOf(150.75))
-                .build();
-
-        orderDto2 = OrderDto.builder()
-                .user(UserDto.builder().id(2L).build())
-                .orderItems(null)
-                .createdAt(ZonedDateTime.now())
-                .totalAmount(BigDecimal.valueOf(20145.75))
-                .build();
-    }
-
     @Test
-    public void OrderService_GetOrdersByUserId_ReturnMoreThanOneOrder() {
-        // Arrange
+    void OrderService_GetOrdersByUserId_ReturnMoreThanOneOrder_Success() {
         Long userId = 1L;
-        when(orderRepository.findByUserIdOrderByCreatedAtDesc(userId)).thenReturn(List.of(order));
-        when(orderMapper.toDto(Mockito.any(Order.class))).thenReturn(orderDto);
+        List<Order> orders = new ArrayList<>();
+        Order order = new Order();
+        orders.add(order);
 
-        // Act
-        List<OrderDto> orderDtoList = orderService.getOrdersByUserId(userId);
+        OrderDto orderDto = new OrderDto();
 
-        // Assert
-        Assertions.assertThat(orderDtoList).isNotNull();
-        Assertions.assertThat(orderDtoList.size()).isEqualTo(1);
-        Assertions.assertThat(orderDtoList.get(0)).isEqualTo(orderDto);
+        when(orderRepository.findByUserIdOrderByCreatedAtDesc(userId)).thenReturn(orders);
+        when(orderMapper.toDto(order)).thenReturn(orderDto);
+
+        List<OrderDto> result = orderService.getOrdersByUserId(userId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.size()).isEqualTo(1);
+        verify(orderRepository, times(1)).findByUserIdOrderByCreatedAtDesc(userId);
+        verify(orderMapper, times(1)).toDto(order);
     }
 
     @Test
-    public void OrderService_GetOrderById_ReturnOrder() {
-        // Arrange
-        Long id = 1L;
-        when(orderRepository.findById(id)).thenReturn(Optional.ofNullable(order));
-        when(orderMapper.toDto(Mockito.any(Order.class))).thenReturn(orderDto);
+    void OrderService_GetOrdersByUserId_ReturnMoreThanOneOrder_EmptyList() {
+        Long userId = 1L;
 
-        // Act
-        OrderDto found = orderService.getOrderById(id);
+        when(orderRepository.findByUserIdOrderByCreatedAtDesc(userId)).thenReturn(new ArrayList<>());
 
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found).isEqualTo(orderDto);
+        List<OrderDto> result = orderService.getOrdersByUserId(userId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isEmpty()).isTrue();
+        verify(orderRepository, times(1)).findByUserIdOrderByCreatedAtDesc(userId);
     }
 
     @Test
-    public void OrderService_CreateOrder_ReturnOrder() {
-        when(orderRepository.save(Mockito.any(Order.class))).thenReturn(order);
-        when(orderMapper.toEntity(Mockito.any(OrderDto.class))).thenReturn(order);
-        when(orderMapper.toDto(Mockito.any(Order.class))).thenReturn(orderDto);
-        OrderDto saved = orderService.createOrder(orderDto);
+    void OrderService_GetOrderById_ReturnOrderDto_Success() {
+        Long orderId = 1L;
+        Order order = new Order();
+        order.setId(orderId);
 
-        Assertions.assertThat(saved).isNotNull();
-        Assertions.assertThat(saved.getTotalAmount()).isEqualTo(order.getTotalAmount());
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        Order result = orderService.getOrderById(orderId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isEqualTo(orderId);
+        verify(orderRepository, times(1)).findById(orderId);
+    }
+
+    @Test
+    void OrderService_GetOrderById_ReturnOrderDto_NotFound() {
+        Long orderId = 1L;
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class, () -> orderService.getOrderById(orderId));
+        verify(orderRepository, times(1)).findById(orderId);
+    }
+
+    @Test
+    void OrderService_CreateOrder_ReturnOrderDto_Success() {
+        Order order = new Order();
+        Order savedOrder = new Order();
+        OrderDto orderDto = new OrderDto();
+
+        when(orderRepository.save(order)).thenReturn(savedOrder);
+        when(orderMapper.toDto(savedOrder)).thenReturn(orderDto);
+
+        OrderDto result = orderService.createOrder(order);
+
+        Assertions.assertThat(result).isNotNull();
+        verify(orderRepository, times(1)).save(order);
+        verify(orderMapper, times(1)).toDto(savedOrder);
     }
 }

@@ -1,29 +1,29 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.user.UserDto;
+import com.giancarlos.exception.UserNotFoundException;
 import com.giancarlos.mapper.user.UserMapper;
 import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.repository.UserRepository;
-import io.jsonwebtoken.Jwt;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
@@ -31,250 +31,132 @@ public class UserServiceTests {
     private UserRepository userRepository;
 
     @Mock
-    private UserMapper userMapper;
-
-    @Mock
     private JwtService jwtService;
 
     @Mock
     private AuthenticationManager authenticationManager;
 
+    @Mock
+    private UserMapper userMapper;
+
     @InjectMocks
     private UserService userService;
 
     @Test
-    public void UserService_Register_ReturnUserDto() {
+    void UserService_Register_ReturnUserDto_Success() {
+        User user = new User();
+        User savedUser = new User();
+        UserDto userDto = new UserDto();
 
-        // Arrange
-        String password = "temp";
-        User user = User.builder()
-                .name("John Doe")
-                .email("johndoe@gmail.com")
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .password(password)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        UserDto userDto = UserDto.builder()
-                .name("John Doe")
-                .email("johndoe@gmail.com")
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .orders(null)
-                .cartItems(null)
-                .build();
+        when(userRepository.save(user)).thenReturn(savedUser);
+        when(userMapper.toDto(savedUser)).thenReturn(userDto);
 
-        when(userMapper.toEntity(Mockito.any(UserDto.class))).thenReturn(user);
-        when(userMapper.toDto(Mockito.any(User.class))).thenReturn(userDto);
-        when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
+        UserDto result = userService.register(user);
 
-        // Act
-        UserDto saved = userService.register(userDto, password);
-
-        // Assert
-        Assertions.assertThat(saved).isNotNull();
-        Assertions.assertThat(saved.getName()).isEqualTo("John Doe");
+        Assertions.assertThat(result).isNotNull();
+        verify(userRepository, times(1)).save(user);
+        verify(userMapper, times(1)).toDto(savedUser);
     }
 
     @Test
-    public void UserService_GetUserByEmail_ReturnUserDto() {
-        // Arrange
-        String email = "johndoe@gmail.com";
-        User user = User.builder()
-                .name("John Doe")
-                .email(email)
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .password("temp")
-                .orders(null)
-                .cartItems(null)
-                .build();
-        UserDto userDto = UserDto.builder()
-                .name("John Doe")
-                .email(email)
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .orders(null)
-                .cartItems(null)
-                .build();
+    void UserService_GetUserByEmail_ReturnUserDto_Success() {
+        String email = "test@example.com";
+        User user = new User();
+        UserDto userDto = new UserDto();
 
-        when(userMapper.toDto(Mockito.any(User.class))).thenReturn(userDto);
-        when(userRepository.findByEmail(Mockito.any(String.class))).thenReturn(Optional.of(user));
-
-        // Act
-        UserDto found = userService.getUserByEmail(email);
-
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getName()).isEqualTo("John Doe");
-    }
-
-    @Test
-    public void UserService_Verify_ReturnString() {
-        // Arrange
-        String email = "johndoe@gmail.com";
-        String password = "temp";
-        User user = User.builder()
-                .name("John Doe")
-                .email(email)
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .password(password)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        String token = "token";
-        Authentication authentication = Mockito.mock(Authentication.class);
-        when(authenticationManager.authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
-        when(jwtService.generateToken(Mockito.any(String.class))).thenReturn(token);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(userRepository.findByEmail(Mockito.any(String.class))).thenReturn(Optional.of(user));
-
-        // Act
-        String returnToken = userService.verify(email, password);
-
-        // Assert
-        Assertions.assertThat(returnToken).isNotNull();
-        Assertions.assertThat(returnToken).isEqualTo(token);
-    }
-
-    @Test
-    public void UserService_GetUserRole_ReturnUserRole() {
-        // Arrange
-        String email = "johndoe@gmail.com";
-        String password = "temp";
-        User user = User.builder()
-                .name("John Doe")
-                .email(email)
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .password(password)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        when(userRepository.findByEmail(Mockito.any(String.class))).thenReturn(Optional.ofNullable(user));
-
-        // Act
-        UserRole userRole = userService.getUserRole(email);
-
-        // Assert
-        Assertions.assertThat(userRole).isNotNull();
-        Assertions.assertThat(userRole.toString()).isEqualTo("CUSTOMER");
-    }
-
-    @Test
-    public void UserService_GetUsers_ReturnMoreThanOneUserDto() {
-        // Arrange
-        String email = "johndoe@gmail.com";
-        String email2 = "janedoe@gmail.com";
-        String password = "temp";
-        String password2 = "pass";
-        User user = User.builder()
-                .name("John Doe")
-                .email(email)
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .password(password)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        UserDto userDto = UserDto.builder()
-                .name("John Doe")
-                .email(email)
-                .phone("123-456-7891")
-                .address("123 Sesame St")
-                .role(UserRole.CUSTOMER)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        User user2 = User.builder()
-                .name("Jane Doe")
-                .email(email2)
-                .phone("789-456-7891")
-                .address("543 Sesame St")
-                .role(UserRole.ADMIN)
-                .password(password2)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        UserDto userDto2 = UserDto.builder()
-                .name("Jane Doe")
-                .email(email2)
-                .phone("789-456-7891")
-                .address("543 Sesame St")
-                .role(UserRole.ADMIN)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        List<User> userList = List.of(user, user2);
-
-        when(userRepository.findAll()).thenReturn(userList);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(userMapper.toDto(user)).thenReturn(userDto);
-        when(userMapper.toDto(user2)).thenReturn(userDto2);
 
-        // Act
-        List<UserDto> userDtoList = userService.getUsers();
+        UserDto result = userService.getUserByEmail(email);
 
-        // Assert
-        Assertions.assertThat(userDtoList).isNotNull();
-        Assertions.assertThat(userDtoList.size()).isEqualTo(2);
-
-        UserDto dto1 = userDtoList.get(0);
-        UserDto dto2 = userDtoList.get(1);
-
-        Assertions.assertThat(dto1.getName()).isEqualTo("John Doe");
-        Assertions.assertThat(dto1.getEmail()).isEqualTo(email);
-        Assertions.assertThat(dto1.getRole()).isEqualTo(UserRole.CUSTOMER);
-
-        Assertions.assertThat(dto2.getName()).isEqualTo("Jane Doe");
-        Assertions.assertThat(dto2.getEmail()).isEqualTo(email2);
-        Assertions.assertThat(dto2.getRole()).isEqualTo(UserRole.ADMIN);
+        Assertions.assertThat(result).isNotNull();
+        verify(userRepository, times(1)).findByEmail(email);
+        verify(userMapper, times(1)).toDto(user);
     }
 
     @Test
-    public void UserService_GetUserById_ReturnUserDto() {
-        // Arrange
-        String email = "johndoe@gmail.com";
-        String password = "temp";
-        String name = "John Doe";
-        String address = "123 Sesame St";
-        String phone = "123-456-7891";
-        Long id = 1L;
-        User user = User.builder()
-                .name(name)
-                .email(email)
-                .phone(phone)
-                .address(address)
-                .role(UserRole.CUSTOMER)
-                .password(password)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        UserDto userDto = UserDto.builder()
-                .name(name)
-                .email(email)
-                .phone(phone)
-                .address(address)
-                .role(UserRole.CUSTOMER)
-                .orders(null)
-                .cartItems(null)
-                .build();
-        when(userMapper.toDto(Mockito.any(User.class))).thenReturn(userDto);
-        when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
+    void UserService_GetUserByEmail_ReturnUserDto_NotFound() {
+        String email = "notfound@example.com";
 
-        // Act
-        UserDto found = userService.getUserById(id);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getName()).isEqualTo(name);
+        assertThrows(UserNotFoundException.class, () -> userService.getUserByEmail(email));
+        verify(userRepository, times(1)).findByEmail(email);
+    }
+
+    @Test
+    void UserService_Verify_ReturnString_Success() {
+        String email = "test@example.com";
+        String rawPassword = "password";
+        User user = new User();
+        Authentication authentication = mock(Authentication.class);
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(jwtService.generateToken(email)).thenReturn("mockedToken");
+
+        String result = userService.verify(email, rawPassword);
+
+        Assertions.assertThat(result).isEqualTo("mockedToken");
+        verify(userRepository, times(1)).findByEmail(email);
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtService, times(1)).generateToken(email);
+    }
+
+    @Test
+    void UserService_Verify_ReturnString_UserNotFound() {
+        String email = "notfound@example.com";
+        String rawPassword = "password";
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        String result = userService.verify(email, rawPassword);
+
+        Assertions.assertThat(result).isEqualTo("Failed to authenticate. User email does not exist");
+        verify(userRepository, times(1)).findByEmail(email);
+    }
+
+    @Test
+    void UserService_Verify_ReturnString_InvalidPassword() {
+        String email = "test@example.com";
+        String rawPassword = "wrongpassword";
+        User user = new User();
+        Authentication authentication = mock(Authentication.class);
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(false);
+
+        String result = userService.verify(email, rawPassword);
+
+        Assertions.assertThat(result).isEqualTo("Failed to authenticate. User password is incorrect");
+        verify(userRepository, times(1)).findByEmail(email);
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    @Test
+    void UserService_GetUserById_ReturnUser_Success() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        User result = userService.getUserById(userId);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getId()).isEqualTo(userId);
+        verify(userRepository, times(1)).findById(userId);
+    }
+
+    @Test
+    void UserService_GetUserById_ReturnUser_NotFound() {
+        Long userId = 1L;
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(userId));
+        verify(userRepository, times(1)).findById(userId);
     }
 }

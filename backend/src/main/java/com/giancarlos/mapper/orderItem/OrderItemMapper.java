@@ -2,46 +2,21 @@ package com.giancarlos.mapper.orderItem;
 
 import com.giancarlos.dto.orderItem.OrderItemDto;
 import com.giancarlos.exception.OrderNotFoundException;
-import com.giancarlos.exception.UserNotFoundException;
-import com.giancarlos.mapper.order.OrderMapper;
-import com.giancarlos.mapper.product.ProductMapper;
 import com.giancarlos.model.OrderItem;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderItemMapper {
-    private final ProductMapper productMapper;
-    private final OrderMapper orderMapper;
-
-    public OrderItemMapper(@Lazy ProductMapper productMapper, @Lazy OrderMapper orderMapper) {
-        this.productMapper = productMapper;
-        this.orderMapper = orderMapper;
-    }
-
     public OrderItemDto toDto(OrderItem orderItem) {
         if (orderItem == null) {
             throw new OrderNotFoundException("Order parameter is null in OrderMapper toDto");
         }
         return OrderItemDto.builder()
                 .id(orderItem.getId())
-                .order(orderMapper.toDto(orderItem.getOrder()))
+                .orderId(orderItem.getOrder().getId())
                 .price(orderItem.getPrice())
-                .product(productMapper.toDto(orderItem.getProduct()))
+                .productId(orderItem.getProduct().getId())
                 .quantity(orderItem.getQuantity())
-                .build();
-    }
-
-    public OrderItem toEntity(OrderItemDto orderItemDto) {
-        if (orderItemDto == null) {
-            throw new UserNotFoundException("OrderDto parameter is null in OrderMapper toEntity");
-        }
-        return OrderItem.builder()
-                .id(orderItemDto.getId())
-                .order(orderMapper.toEntity(orderItemDto.getOrder()))
-                .price(orderItemDto.getPrice())
-                .product(productMapper.toEntity(orderItemDto.getProduct()))
-                .quantity(orderItemDto.getQuantity())
                 .build();
     }
 }

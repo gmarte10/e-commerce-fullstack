@@ -1,6 +1,7 @@
 package com.giancarlos.service;
 
 import com.giancarlos.dto.orderItem.OrderItemDto;
+import com.giancarlos.exception.OrderItemNotFoundException;
 import com.giancarlos.mapper.orderItem.OrderItemMapper;
 import com.giancarlos.model.*;
 import com.giancarlos.repository.OrderItemRepository;
@@ -15,13 +16,14 @@ public class OrderItemService {
     private final OrderItemMapper orderItemMapper;
 
     public OrderItemService(OrderItemRepository orderItemRepository,
-                            OrderItemMapper orderItemMapper) {
+                            OrderItemMapper orderItemMapper
+                            ) {
         this.orderItemRepository = orderItemRepository;
         this.orderItemMapper = orderItemMapper;
     }
 
-    public OrderItemDto getOrderItemById(Long orderItemId) {
-        return orderItemMapper.toDto(orderItemRepository.findById(orderItemId).orElseThrow());
+    public OrderItem getOrderItemById(Long orderItemId) {
+        return orderItemRepository.findById(orderItemId).orElseThrow(() -> new OrderItemNotFoundException("Order Item not found"));
     }
 
     public List<OrderItemDto> getOrderItemsByOrderId(Long orderId) {
@@ -33,17 +35,8 @@ public class OrderItemService {
         return orderItemDtos;
     }
 
-    public List<OrderItemDto> getOrderItemsByProductId(Long productId) {
-        List<OrderItem> orderItems = orderItemRepository.findByProductId(productId);
-        List<OrderItemDto> orderItemDtos = new ArrayList<>();
-        for (OrderItem orderItem : orderItems) {
-            orderItemDtos.add(orderItemMapper.toDto(orderItem));
-        }
-        return orderItemDtos;
-    }
-
-    public OrderItemDto createOrderItem(OrderItemDto orderItemDto) {
-        OrderItem savedOrderItem = orderItemRepository.save(orderItemMapper.toEntity(orderItemDto));
+    public OrderItemDto createOrderItem(OrderItem orderItem) {
+        OrderItem savedOrderItem = orderItemRepository.save(orderItem);
         return orderItemMapper.toDto(savedOrderItem);
     }
 }

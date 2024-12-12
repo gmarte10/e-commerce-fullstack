@@ -1,15 +1,13 @@
 package com.giancarlos.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.dto.user.UserLoginDto;
 import com.giancarlos.dto.user.UserRegisterDto;
 import com.giancarlos.dto.user.UserResponseDto;
-import com.giancarlos.mapper.user.UserRegisterMapper;
 import com.giancarlos.mapper.user.UserResponseMapper;
 
+import com.giancarlos.model.User;
 import com.giancarlos.model.UserRole;
 import com.giancarlos.service.JwtService;
 import com.giancarlos.service.UserService;
@@ -26,13 +24,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.print.attribute.standard.Media;
-import javax.xml.transform.Result;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,9 +43,6 @@ class UserControllerTests {
 
     @MockBean
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @MockBean
-    private UserRegisterMapper userRegisterMapper;
 
     @MockBean
     private JwtService jwtService;
@@ -86,9 +77,8 @@ class UserControllerTests {
                 .build();
 
         when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(userRegisterMapper.toDto(any(UserRegisterDto.class))).thenReturn(userDto);
         when(userResponseMapper.toResponse(any(UserDto.class))).thenReturn(userResponseDto);
-        when(userService.register(any(UserDto.class), anyString())).thenReturn(userDto);
+        when(userService.register(any(User.class))).thenReturn(userDto);
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/api/users/register")

@@ -23,6 +23,6 @@ public class ProductDto {
     private String description;
     private BigDecimal price;
     private String imageURL;
-    private List<CartItemDto> cartItems;
-    private List<OrderItemDto> orderItems;
+    private List<Long> cartItems;
+    private List<Long> orderItems;
 }

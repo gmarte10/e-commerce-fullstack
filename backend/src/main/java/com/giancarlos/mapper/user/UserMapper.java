@@ -1,11 +1,7 @@
 package com.giancarlos.mapper.user;
 
-import com.giancarlos.dto.cartItem.CartItemDto;
-import com.giancarlos.dto.order.OrderDto;
 import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.exception.UserNotFoundException;
-import com.giancarlos.mapper.cartItem.CartItemMapper;
-import com.giancarlos.mapper.order.OrderMapper;
 import com.giancarlos.model.CartItem;
 import com.giancarlos.model.Order;
 import com.giancarlos.model.User;
@@ -16,13 +12,6 @@ import java.util.List;
 
 @Component
 public class UserMapper {
-    private final OrderMapper orderMapper;
-    private final CartItemMapper cartItemMapper;
-
-    public UserMapper(OrderMapper orderMapper, CartItemMapper cartItemMapper) {
-        this.cartItemMapper = cartItemMapper;
-        this.orderMapper = orderMapper;
-    }
 
     public UserDto toDto(User user) {
         if (user == null) {
@@ -35,68 +24,30 @@ public class UserMapper {
                 .role(user.getRole())
                 .address(user.getAddress())
                 .phone(user.getPhone())
-                .orders(mapOrdersToDtos(user.getOrders()))
-                .cartItems(mapCartItemsToDtos(user.getCartItems()))
+                .orders(mapOrdersToIds(user.getOrders()))
+                .cartItems(mapCartItemsToIds(user.getCartItems()))
                 .build();
     }
 
-    public User toEntity(UserDto userDto) {
-        if (userDto == null) {
-            throw new UserNotFoundException("UserDto parameter is null in UserMapper toEntity");
-        }
-        return User.builder()
-                .id(userDto.getId())
-                .name(userDto.getName())
-                .email(userDto.getEmail())
-                .role(userDto.getRole())
-                .address(userDto.getAddress())
-                .phone(userDto.getPhone())
-                .orders(mapDtosToOrders(userDto.getOrders()))
-                .cartItems(mapDtosToCartItems(userDto.getCartItems()))
-                .build();
-    }
-
-    private List<OrderDto> mapOrdersToDtos(List<Order> orders) {
+    private List<Long> mapOrdersToIds(List<Order> orders) {
         if (orders == null) {
             return null;
         }
-        List<OrderDto> orderDtos = new ArrayList<>();
-        for (Order order : orders) {
-            orderDtos.add(orderMapper.toDto(order));
+        List<Long> ret = new ArrayList<>();
+        for (Order item : orders) {
+            ret.add(item.getId());
         }
-        return orderDtos;
+        return ret;
     }
 
-    private List<CartItemDto> mapCartItemsToDtos(List<CartItem> cartItems) {
+    private List<Long> mapCartItemsToIds(List<CartItem> cartItems) {
         if (cartItems == null) {
             return null;
         }
-        List<CartItemDto> cartItemDtos = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            cartItemDtos.add(cartItemMapper.toDto(cartItem));
+        List<Long> ret = new ArrayList<>();
+        for (CartItem item : cartItems) {
+            ret.add(item.getId());
         }
-        return cartItemDtos;
-    }
-
-    private List<Order> mapDtosToOrders(List<OrderDto> orderDtos) {
-        if (orderDtos == null) {
-            return null;
-        }
-        List<Order> orders = new ArrayList<>();
-        for (OrderDto orderDto : orderDtos) {
-            orders.add(orderMapper.toEntity(orderDto));
-        }
-        return orders;
-    }
-
-    private List<CartItem> mapDtosToCartItems(List<CartItemDto> cartItemDtos) {
-        if (cartItemDtos == null) {
-            return null;
-        }
-        List<CartItem> cartItems = new ArrayList<>();
-        for (CartItemDto cartItemDto : cartItemDtos) {
-            cartItems.add(cartItemMapper.toEntity(cartItemDto));
-        }
-        return cartItems;
+        return ret;
     }
 }

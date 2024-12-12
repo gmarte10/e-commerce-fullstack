@@ -4,34 +4,41 @@ import com.giancarlos.dto.user.UserDto;
 import com.giancarlos.dto.user.UserLoginDto;
 import com.giancarlos.dto.user.UserRegisterDto;
 import com.giancarlos.dto.user.UserResponseDto;
-import com.giancarlos.mapper.user.UserRegisterMapper;
 import com.giancarlos.mapper.user.UserResponseMapper;
 import com.giancarlos.model.User;
-import com.giancarlos.model.UserRole;
 import com.giancarlos.service.UserService;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController()
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final UserRegisterMapper userRegisterMapper;
     private final UserResponseMapper userResponseMapper;
-    public UserController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, UserRegisterMapper userRegisterMapper, UserResponseMapper userResponseMapper) {
+    public UserController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, UserResponseMapper userResponseMapper) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.userRegisterMapper = userRegisterMapper;
         this.userService = userService;
         this.userResponseMapper= userResponseMapper;
     }
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> register(@RequestBody UserRegisterDto userRegisterDto) {
         String encodedPassword=  bCryptPasswordEncoder.encode(userRegisterDto.getPassword());
-        UserDto saved = userService.register(userRegisterMapper.toDto(userRegisterDto), encodedPassword);
+        User user = User.builder()
+                .name(userRegisterDto.getName())
+                .role(userRegisterDto.getRole())
+                .phone(userRegisterDto.getPhone())
+                .address(userRegisterDto.getAddress())
+                .email(userRegisterDto.getEmail())
+                .cartItems(new ArrayList<>())
+                .orders(new ArrayList<>())
+                .password(encodedPassword)
+                .build();
+        UserDto saved = userService.register(user);
         UserResponseDto response = userResponseMapper.toResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
