@@ -4,6 +4,8 @@ import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.exception.CartItemNotFoundException;
 import com.giancarlos.mapper.cartItem.CartItemMapper;
 import com.giancarlos.model.CartItem;
+import com.giancarlos.model.Product;
+import com.giancarlos.model.User;
 import com.giancarlos.repository.CartItemRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -56,19 +58,20 @@ public class CartItemServiceTests {
     @Test
     void CartItemService_CreateCartItem_ReturnCartItem_NewCartItem() {
         CartItem cartItem = new CartItem();
-        cartItem.setId(1L);
+        cartItem.setUser(User.builder().id(1L).build());
+        cartItem.setProduct(Product.builder().id(2L).build());
         cartItem.setQuantity(1);
 
         CartItemDto cartItemDto = new CartItemDto();
 
-        when(cartItemRepository.findById(cartItem.getId())).thenReturn(Optional.empty());
+        when(cartItemRepository.findByUserIdAndProductId(any(Long.class), any(Long.class))).thenReturn(Optional.empty());
         when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
         when(cartItemMapper.toDto(cartItem)).thenReturn(cartItemDto);
 
         CartItemDto result = cartItemService.createCartItem(cartItem);
 
         Assertions.assertThat(result).isNotNull();
-        verify(cartItemRepository, times(1)).findById(cartItem.getId());
+        verify(cartItemRepository, times(1)).findByUserIdAndProductId(any(Long.class), any(Long.class));
         verify(cartItemRepository, times(1)).save(cartItem);
         verify(cartItemMapper, times(1)).toDto(cartItem);
     }
@@ -80,7 +83,8 @@ public class CartItemServiceTests {
         existingCartItem.setQuantity(2);
 
         CartItem newCartItem = new CartItem();
-        newCartItem.setId(1L);
+        newCartItem.setUser(User.builder().id(1L).build());
+        newCartItem.setProduct(Product.builder().id(2L).build());
         newCartItem.setQuantity(3);
 
         CartItem updatedCartItem = new CartItem();
@@ -89,14 +93,14 @@ public class CartItemServiceTests {
 
         CartItemDto cartItemDto = new CartItemDto();
 
-        when(cartItemRepository.findById(newCartItem.getId())).thenReturn(Optional.of(existingCartItem));
+        when(cartItemRepository.findByUserIdAndProductId(1L, 2L)).thenReturn(Optional.of(existingCartItem));
         when(cartItemRepository.save(existingCartItem)).thenReturn(updatedCartItem);
         when(cartItemMapper.toDto(updatedCartItem)).thenReturn(cartItemDto);
 
         CartItemDto result = cartItemService.createCartItem(newCartItem);
 
         Assertions.assertThat(result).isNotNull();
-        verify(cartItemRepository, times(1)).findById(newCartItem.getId());
+        verify(cartItemRepository, times(1)).findByUserIdAndProductId(1L, 2L);
         verify(cartItemRepository, times(1)).save(existingCartItem);
         verify(cartItemMapper, times(1)).toDto(updatedCartItem);
     }
