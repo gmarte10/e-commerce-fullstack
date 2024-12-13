@@ -23,7 +23,7 @@ public class ProductResponseMapper {
                 .price(productDto.getPrice())
                 .description(productDto.getDescription())
                 .category(productDto.getCategory())
-                .imgBase64(imageService.getImageBase64(productDto.getImageURL()))
+                .imageBase64(imageService.getImageBase64(productDto.getImageURL()))
                 .build();
     }
 }

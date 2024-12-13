@@ -5,79 +5,49 @@ import {
   Container,
   Form,
   InputGroup,
-  ListGroup,
   Row,
 } from "react-bootstrap";
-import sonym5 from "../assets/sonym5.jpg";
-import iphone from "../assets/iphone15.jpg";
-import celtics from "../assets/celticshoodie.jpg";
-import chicken from "../assets/ccsandwich.jpg";
-import useGetProducts from "../api/hooks/useProducts";
+
 import NavBar from "../components/NavBar";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axiosInstance from "../api/axiosInstance";
 
 interface Product {
-  id: number,
+  id: number;
   name: string;
-  price: number;
   category: string;
   description: string;
+  price: number;
   imageBase64: string;
 }
 
-// const products: Prod[] = [
-//   {
-//     id: 1,
-//     name: "Iphone 15",
-//     price: 900,
-//     category: "Tech",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: iphone,
-//   },
-//   {
-//     id: 2,
-//     name: "Sony m5 headphones",
-//     price: 499.99,
-//     category: "Tech",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: sonym5,
-//   },
-//   {
-//     id: 3,
-//     name: "Celtics Hoodie",
-//     price: 120,
-//     category: "Clothing",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: celtics,
-//   },
-//   {
-//     id: 4,
-//     name: "Crispy Chicken Sandwich",
-//     price: 10,
-//     category: "Food",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: chicken,
-//   },
-// ];
 const Home = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
-  const getProducts = useGetProducts();
 
-  useEffect(() => {
+  const getProducts = async () => {
     try {
-      getProducts().then((data) => {
-        setProducts(data);
-      });
+      const token = localStorage.getItem("token");
+      const response = await axiosInstance.get<Product[]>(
+        `/api/products/get-all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setProducts(response.data);
+      // console.log(`Products: ${JSON.stringify(response.data)}`);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  useEffect(() => {
+    getProducts();
+    // console.log(products);
   }, []);
 
   const handleItemClick = (product: Product) => {
@@ -86,10 +56,6 @@ const Home = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-  };
-
-  const handleSearch = () => {
-    // search for products and update the products state
   };
 
   return (

@@ -1,65 +1,19 @@
-import { Button, Col, Container, ListGroup, Row } from "react-bootstrap";
-import sonym5 from "../assets/sonym5.jpg";
-import iphone from "../assets/iphone15.jpg";
-import celtics from "../assets/celticshoodie.jpg";
-import chicken from "../assets/ccsandwich.jpg";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 
 interface CartItem {
-  productId: number;
+  id: number;
   name: string;
-  price: number;
   category: string;
   description: string;
+  price: number;
   imageBase64: string;
   quantity: number;
 }
 
-// const cartItems: CartItem[] = [
-//   {
-//     id: 1,
-//     name: "Iphone 15",
-//     price: 900,
-//     category: "Tech",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: iphone,
-//     quantity: 2,
-//   },
-//   {
-//     id: 2,
-//     name: "Sony m5 headphones",
-//     price: 499.99,
-//     category: "Tech",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: sonym5,
-//     quantity: 1,
-//   },
-//   {
-//     id: 3,
-//     name: "Celtics Hoodie",
-//     price: 120,
-//     category: "Clothing",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: celtics,
-//     quantity: 3,
-//   },
-//   {
-//     id: 4,
-//     name: "Crispy Chicken Sandwich",
-//     price: 10,
-//     category: "Food",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: chicken,
-//     quantity: 1,
-//   },
-// ];
 const Cart = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -72,13 +26,14 @@ const Cart = () => {
       console.log(`Email: ${email}`);
       console.log(`Token: ${token}`);
       const response = await axiosInstance.get<CartItem[]>(
-        `/api/cart-items/${email}`,
+        `/api/cart-items/get/${email}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+      console.log(response.data[0]);
       setCartItems(response.data);
     } catch (error) {
       console.log(error);
@@ -153,7 +108,7 @@ const Cart = () => {
                   </Col>
                   <Col className="cart-col-btn">
                     <div className="cart-div-rm-btn">
-                      <Button onClick = {() => {handleRemoveCartItem(cartItem.productId)}}>Remove</Button>
+                      <Button onClick = {() => {handleRemoveCartItem(cartItem.id)}}>Remove</Button>
                     </div>
                   </Col>
                 </Row>

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +20,8 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private String secretKey = "";
-
-    public JwtService() {
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGenerator.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -59,6 +51,9 @@ public class JwtService {
 
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        if (keyBytes.length < 32) {
+            throw new IllegalArgumentException("JWT_SECRET key must be at least 256 bits.");
+        }
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

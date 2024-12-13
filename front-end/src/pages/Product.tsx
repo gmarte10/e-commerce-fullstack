@@ -7,9 +7,9 @@ import axiosInstance from "../api/axiosInstance";
 interface Product {
   id: number;
   name: string;
-  price: number;
   category: string;
   description: string;
+  price: number;
   imageBase64: string;
 }
 
@@ -31,7 +31,7 @@ const Product = () => {
           quantity: quantity,
       };
       const response = await axiosInstance.post(
-        `/api/cart-items/add`,
+        `/api/cart-items/create`,
         requestBody,
         {
           headers: {

@@ -2,9 +2,7 @@ package com.giancarlos.mapper.cartItem;
 
 import com.giancarlos.dto.cartItem.CartItemDto;
 import com.giancarlos.dto.cartItem.CartItemResponseDto;
-import com.giancarlos.dto.product.ProductDto;
 import com.giancarlos.exception.CartItemNotFoundException;
-import com.giancarlos.mapper.product.ProductResponseMapper;
 import com.giancarlos.model.Product;
 import com.giancarlos.service.ImageService;
 import com.giancarlos.service.ProductService;
@@ -30,7 +28,7 @@ public class CartItemResponseMapper {
                 .name(product.getName())
                 .category(product.getCategory())
                 .description(product.getDescription())
-                .imgBase64(imageService.getImageBase64(product.getImageURL()))
+                .imageBase64(imageService.getImageBase64(product.getImageURL()))
                 .quantity(cartItemDto.getQuantity())
                 .price(product.getPrice())
                 .build();

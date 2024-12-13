@@ -1,6 +1,5 @@
 package com.giancarlos.dto.cartItem;
 
-import com.giancarlos.dto.product.ProductResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +17,6 @@ public class CartItemResponseDto {
     private String category;
     private String description;
     private BigDecimal price;
-    private String imgBase64;
+    private String imageBase64;
     private Integer quantity;
 }

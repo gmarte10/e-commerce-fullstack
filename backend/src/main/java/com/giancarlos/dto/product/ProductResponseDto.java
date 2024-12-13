@@ -17,5 +17,5 @@ public class ProductResponseDto {
     private String category;
     private String description;
     private BigDecimal price;
-    private String imgBase64;
+    private String imageBase64;
 }

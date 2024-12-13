@@ -1,35 +1,55 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import loginToken from "../api/hooks/useGetToken";
-import useGetRole from "../api/hooks/useGetRole";
+import axiosInstance from "../api/axiosInstance";
+
+interface UserInfo {
+  name: string;
+  phone: string;
+  address: string;
+  role: string;
+}
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const getRole = useGetRole();
-  const getToken = loginToken();
   const navigate = useNavigate();
 
   const loginUser = async () => {
     try {
-      const login = await getToken(email, password);
-      const role = await getRole(email);
-      console.log(`Role: ${role}`);
-      console.log(`Login: ${login}`);
-      if (role === "ADMIN") {
-        navigate("adminHome");
-      } else {
-        navigate("/home");
-      }
+      const loginResponse = await axiosInstance.post(`/api/users/login`, {
+        email: email,
+        password: password,
+      });
+      localStorage.setItem("token", loginResponse.data);
+      localStorage.setItem("email", email);
+
+      const infoResponse = await axiosInstance.get<UserInfo>(
+        `/api/users/info/${email}`,
+        {
+          headers: {
+            Authorization: `Bearer ${loginResponse.data}`,
+          },
+        }
+      );
+      localStorage.setItem("name", infoResponse.data.name);
+      localStorage.setItem("phone", infoResponse.data.phone);
+      localStorage.setItem("address", infoResponse.data.address);
+      localStorage.setItem("role", infoResponse.data.role);
+
+      console.log(`token: ${loginResponse.data}`);
+      console.log(`name: ${infoResponse.data.name}`);
+      console.log(`phone: ${infoResponse.data.phone}`);
+      console.log(`address: ${infoResponse.data.address}`);
+      console.log(`role: ${infoResponse.data.role}`);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    loginUser();
+    await loginUser();
     navigate("/home");
   };
 
@@ -47,7 +67,7 @@ const Login = () => {
 
   return (
     <>
-      <div className = "login-container">
+      <div className="login-container">
         <div className="login-form">
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
