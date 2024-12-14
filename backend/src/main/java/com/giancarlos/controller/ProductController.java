@@ -64,4 +64,10 @@ public class ProductController {
         ProductResponseDto response = productResponseMapper.toResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/remove/{productId}")
+    public ResponseEntity<String> removeProductById(@PathVariable Long productId) {
+        productService.removeProductById(productId);
+        return new ResponseEntity<>("Product Successfully Removed", HttpStatus.OK);
+    }
 }

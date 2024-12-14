@@ -148,4 +148,16 @@ public class ProductServiceTests {
         assertThrows(IllegalArgumentException.class, () -> productService.createProduct(product));
         verify(productMapper, times(1)).toDto(product);
     }
+
+    @Test
+    void ProductService_RemoveProductById_ReturnNothing() {
+        Long requestId = 1L;
+
+        doNothing().when(productRepository).deleteById(requestId);
+
+        productService.removeProductById(requestId);
+
+        verify(productRepository, times(1)).deleteById(requestId);
+
+    }
 }

@@ -8,8 +8,6 @@ import com.giancarlos.mapper.product.ProductRequestMapper;
 import com.giancarlos.mapper.product.ProductResponseMapper;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.giancarlos.model.Product;
 import com.giancarlos.service.ImageService;
@@ -28,8 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -126,4 +125,18 @@ public class ProductControllerTests {
                 .andExpect(jsonPath("$.name").value("hoodie"))
                 .andExpect(jsonPath("$.price").value(BigDecimal.valueOf(32)));
     }
+
+    @Test
+    public void ProductController_RemoveProductById_ReturnString() throws Exception {
+        String response = "Product Successfully Removed";
+        Long requestId = 1L;
+        doNothing().when(productService).removeProductById(requestId);
+        ResultActions resultActions = mockMvc.perform(delete("/api/products/remove/{productId}", requestId)
+                .contentType(MediaType.APPLICATION_JSON));
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().string(response));
+        verify(productService, times(1)).removeProductById(requestId);
+    }
+
+
 }

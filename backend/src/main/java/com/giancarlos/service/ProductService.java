@@ -56,6 +56,10 @@ public class ProductService {
         return found.get();
     }
 
+    public void removeProductById(Long productId) {
+        productRepository.deleteById(productId);
+    }
+
     private void validateProduct(ProductDto productDto) {
         if (productDto.getPrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Product price cannot be negative");
