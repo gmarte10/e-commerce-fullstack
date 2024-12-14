@@ -99,21 +99,14 @@ public class CartItemControllerTests {
     }
 
     @Test
-    public void CartItemController_RemoveCartItemByEmailAndProductId_ReturnString() throws Exception {
-        String email = "test@email.com";
-        UserDto userDto = UserDto.builder().id(1L).email(email).build();
-        CartItemDto cartItemDto = CartItemDto.builder().id(2L).build();
-
-        when(userService.getUserByEmail(email)).thenReturn(userDto);
-        when(cartItemService.getCartItemByUserIdAndProductId(1L, 2L)).thenReturn(cartItemDto);
-
-        mockMvc.perform(delete("/api/cart-items/remove/{email}/{productId}", email, 2L)
+    public void CartItemController_RemoveCartItemById_ReturnString() throws Exception {
+        Long cartItemId = 1L;
+        mockMvc.perform(delete("/api/cart-items/remove/{cartItemId}", cartItemId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("CartItem Removed"));
 
-        verify(userService, times(1)).getUserByEmail(email);
-        verify(cartItemService, times(1)).getCartItemByUserIdAndProductId(1L, 2L);
+        verify(cartItemService, times(1)).removeCartItem(cartItemId);
 
 
     }

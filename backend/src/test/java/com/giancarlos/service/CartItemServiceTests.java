@@ -119,6 +119,8 @@ public class CartItemServiceTests {
     @Test
     void CartItemService_RemoveCartItem_ReturnNothing_DecreaseQuantity() {
         CartItemDto cartItemDto = new CartItemDto();
+        Long cartItemId = 1L;
+
         cartItemDto.setUserId(1L);
         cartItemDto.setProductId(2L);
         cartItemDto.setQuantity(2);
@@ -126,11 +128,11 @@ public class CartItemServiceTests {
         CartItem cartItem = new CartItem();
         cartItem.setQuantity(2);
 
-        when(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()))
+        when(cartItemRepository.findById(cartItemId))
                 .thenReturn(Optional.of(cartItem));
-        when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
+        when(cartItemRepository.save(any(CartItem.class))).thenReturn(cartItem);
 
-        cartItemService.removeCartItem(cartItemDto);
+        cartItemService.removeCartItem(cartItemId);
 
         Assertions.assertThat(cartItem.getQuantity()).isEqualTo(1);
         verify(cartItemRepository, times(1)).save(cartItem);
@@ -139,18 +141,20 @@ public class CartItemServiceTests {
     @Test
     void CartItemService_RemoveCartItem_ReturnNothing() {
         CartItemDto cartItemDto = new CartItemDto();
+        Long cartItemId = 1L;
         cartItemDto.setUserId(1L);
         cartItemDto.setProductId(2L);
         cartItemDto.setQuantity(1);
 
         CartItem cartItem = new CartItem();
+        cartItem.setQuantity(1);
 
-        when(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()))
+        when(cartItemRepository.findById(cartItemId))
                 .thenReturn(Optional.of(cartItem));
 
         doNothing().when(cartItemRepository).delete(cartItem);
 
-        cartItemService.removeCartItem(cartItemDto);
+        cartItemService.removeCartItem(cartItemId);
 
         verify(cartItemRepository, times(1)).delete(cartItem);
     }
