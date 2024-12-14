@@ -1,6 +1,4 @@
 import {
-  Button,
-  Card,
   Col,
   Container,
   ListGroup,
@@ -8,132 +6,73 @@ import {
   Row,
 } from "react-bootstrap";
 
-import sonym5 from "../assets/sonym5.jpg";
-import iphone from "../assets/iphone15.jpg";
-import celtics from "../assets/celticshoodie.jpg";
-import chicken from "../assets/ccsandwich.jpg";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 
 interface Order {
   id: number;
-  date: string;
-  total: number;
-  address: string;
+  totalAmount: number;
+  createdAt: Date;
+  orderItemIds: number[];
 }
 
 interface OrderItem {
-  orderItemId: number;
+  id: number;
+  orderId: number;
   name: string;
-  price: number;
   category: string;
+  description: string;
+  price: number;
   imageBase64: string;
   quantity: number;
-  orderId: number;
 }
 
-interface OrderDisplay {
+interface OrderWithItems {
   order: Order;
-  orderItems: OrderItem[];
+  items: OrderItem[];
 }
 
-// const orderItem: OrderItem[] = [
-//   {
-//     id: 1,
-//     name: "Iphone 15",
-//     price: 900,
-//     category: "Tech",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: iphone,
-//     quantity: 2
-//   },
-//   {
-//     id: 2,
-//     name: "Sony m5 headphones",
-//     price: 499.99,
-//     category: "Tech",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: sonym5,
-//     quantity: 1
-//   },
-//   {
-//     id: 3,
-//     name: "Celtics Hoodie",
-//     price: 120,
-//     category: "Clothing",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: celtics,
-//     quantity: 3
-//   },
-//   {
-//     id: 4,
-//     name: "Crispy Chicken Sandwich",
-//     price: 10,
-//     category: "Food",
-//     description:
-//       "Lorem ipsum odor amet, consectetuer adipiscing elit. Lorem aliquet quisque bibendum ullamcorper per. Primis maecenas porttitor finibus elementum conubia suspendisse lobortis amet nec.",
-//     imageBase64: chicken,
-//     quantity: 1
-//   },
-// ];
-// const orders: Order[] = [
-//   {
-//     id: 1,
-//     date: "2021-10-10",
-//     total: 1000,
-//     address: "1234 Main St",
-//     orderItems: [orderItem[0], orderItem[1]],
-//   },
-//   {
-//     id: 2,
-//     date: "2021-10-11",
-//     total: 130,
-//     address: "1234 Main St",
-//     orderItems: [orderItem[2], orderItem[3]],
-//   },
-// ];
 
 const Order = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [orderDisplay, setOrderDisplay] = useState<OrderDisplay[]>([]);
+  const [ordersWithItems, setOrdersWithItems] = useState<OrderWithItems[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const getOrders = async () => {
     try {
       const token = localStorage.getItem("token");
       const email = localStorage.getItem("email");
-      const orderRes = await axiosInstance.get<Order[]>(
-        `/api/orders/user/${email}`,
+
+      const orderResponse = await axiosInstance.get<Order[]>(
+        `/api/orders/get/${email}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setOrders(orderRes.data);
 
-      const oItemRes = await axiosInstance.get<OrderItem[]>(
-        `/api/order-items/${email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setOrderItems(oItemRes.data);
+      const orders = orderResponse.data;
 
-      oItemRes.data.forEach((orderItem) => {
-        const order = orderRes.data.find((order) => order.id === orderItem.orderId);
-        if (order) {
-          setOrderDisplay((prev) => [...prev, { order: order, orderItems: [orderItem] }]);
-        }
-      });
+      const ordersWithItemsPromises = orders.map(async (order) => {
+        const itemsResponse = await axiosInstance.get<OrderItem[]>(
+          `/api/order-items/get/${order.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        return { order, items: itemsResponse.data};
+      })
+      const ordersWithItems = await Promise.all(ordersWithItemsPromises);
+      console.log(ordersWithItems);
+      setOrdersWithItems(ordersWithItems);
+      
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -141,22 +80,26 @@ const Order = () => {
     getOrders();
   }, []);
 
+  if (loading) {
+    return <div>Loading ...</div>;
+  }
+
   return (
     <>
       <NavBar />
       <Container>
         <ListGroup>
-          {orderDisplay.map((oDisplay, index) => (
+          {ordersWithItems.map((orderWithItems, index) => (
             <ListGroup.Item key={index}>
               <Navbar expand="lg" className="bg-body-tertiary">
                 <Container>
-                  <Navbar.Text>Order Placed: {oDisplay.order.date}</Navbar.Text>
-                  <Navbar.Text>Total: ${oDisplay.order.total}</Navbar.Text>
+                  <Navbar.Text>Order Placed: {new Date(orderWithItems.order.createdAt).toLocaleString()}</Navbar.Text>
+                  <Navbar.Text>Total: ${orderWithItems.order.totalAmount.toFixed(2)}</Navbar.Text>
                 </Container>
               </Navbar>
               <Row>
-                {oDisplay.orderItems.map((item) => (
-                  <Row className="order-row">
+                {orderWithItems.items.map((item) => (
+                  <Row key={item.id} className="order-row">
                     <Col className="order-col" md={2}>
                       <img
                         className="order-image"
@@ -168,6 +111,7 @@ const Order = () => {
                       <div className="order-p">
                         <h5>{item.name}</h5>
                         <p>Quantity: {item.quantity}</p>
+                        <p>Price: ${item.price.toFixed(2)}</p>
                       </div>
                     </Col>
                   </Row>

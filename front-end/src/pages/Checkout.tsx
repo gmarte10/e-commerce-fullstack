@@ -4,23 +4,27 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 
 interface CartItem {
+  id: number;
   productId: number;
   name: string;
-  price: number;
   category: string;
   description: string;
+  price: number;
   imageBase64: string;
   quantity: number;
-  cartItemId: number;
 }
 
-
+interface OrderItemRequest {
+  productId: number;
+  quantity: number;
+  price: number;
+}
 
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const total: number = location.state?.total || 0;
-  const [address, setAddress] = useState("");
+  const address = localStorage.getItem("address");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const getProductsInCart = async () => {
@@ -28,7 +32,7 @@ const Checkout = () => {
       const token = localStorage.getItem("token");
       const email = localStorage.getItem("email");
       const response = await axiosInstance.get<CartItem[]>(
-        `/api/cart-items/${email}`,
+        `/api/cart-items/get/${email}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,53 +49,52 @@ const Checkout = () => {
     getProductsInCart();
   }, []);
 
-
   const handlePlaceOrder = () => {
     try {
       const token = localStorage.getItem("token");
       const email = localStorage.getItem("email");
-      axiosInstance.post(
-        "/api/orders/add",
-        {
-          email: email,
-          cartItemIds: cartItems.map((cartItem) => cartItem.cartItemId),
-          total: total,
+
+      const orderItemRequests: OrderItemRequest[] = cartItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
+      const orderRequest = {
+        email: email,
+        totalAmount: total,
+        createdAt: new Date().toISOString(),
+        orderItemRequestDtos: orderItemRequests,
+      };
+
+      axiosInstance.post("/api/orders/create", orderRequest, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      });
+
+      clearCart();
+
+      navigate("/order");
     } catch (error) {
       console.log(error);
     }
-    navigate("/order");
   };
 
-  const getAddress = async () => {
+  const clearCart = async () => {
     try {
       const token = localStorage.getItem("token");
       const email = localStorage.getItem("email");
-      console.log(`Email: ${email}`);
-      console.log(`Token: ${token}`);
-      const response = await axiosInstance.get<string>(
-        `/api/users/address/${email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setAddress(response.data);
+      await axiosInstance.delete(`/api/cart-items/clear/${email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Cart has beeen cleared");
     } catch (error) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    getAddress();
-  }, []);
 
   return (
     <>

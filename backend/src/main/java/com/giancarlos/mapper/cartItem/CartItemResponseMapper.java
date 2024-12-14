@@ -25,6 +25,7 @@ public class CartItemResponseMapper {
         Product product = productService.getProductById(cartItemDto.getProductId());
         return CartItemResponseDto.builder()
                 .id(cartItemDto.getId())
+                .productId(product.getId())
                 .name(product.getName())
                 .category(product.getCategory())
                 .description(product.getDescription())

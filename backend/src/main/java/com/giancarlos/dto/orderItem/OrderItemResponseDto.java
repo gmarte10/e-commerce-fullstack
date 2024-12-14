@@ -1,6 +1,5 @@
 package com.giancarlos.dto.orderItem;
 
-import com.giancarlos.dto.product.ProductResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +18,6 @@ public class OrderItemResponseDto {
     private String category;
     private String description;
     private BigDecimal price;
-    private String imgBase64;
+    private String imageBase64;
     private Integer quantity;
 }

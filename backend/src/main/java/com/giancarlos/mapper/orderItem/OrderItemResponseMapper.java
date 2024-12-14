@@ -3,11 +3,7 @@ package com.giancarlos.mapper.orderItem;
 import com.giancarlos.dto.orderItem.OrderItemDto;
 import com.giancarlos.dto.orderItem.OrderItemResponseDto;
 import com.giancarlos.exception.OrderItemNotFoundException;
-import com.giancarlos.exception.OrderNotFoundException;
-import com.giancarlos.mapper.product.ProductMapper;
-import com.giancarlos.mapper.product.ProductResponseMapper;
 import com.giancarlos.model.Product;
-import com.giancarlos.repository.OrderItemRepository;
 import com.giancarlos.service.ImageService;
 import com.giancarlos.service.ProductService;
 import org.springframework.stereotype.Component;
@@ -33,7 +29,7 @@ public class OrderItemResponseMapper {
                 .orderId(orderItemDto.getOrderId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .imgBase64(imageService.getImageBase64(product.getImageURL()))
+                .imageBase64(imageService.getImageBase64(product.getImageURL()))
                 .category(product.getCategory())
                 .build();
     }

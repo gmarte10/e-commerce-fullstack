@@ -6,6 +6,7 @@ import axiosInstance from "../api/axiosInstance";
 
 interface CartItem {
   id: number;
+  productId: number;
   name: string;
   category: string;
   description: string;
