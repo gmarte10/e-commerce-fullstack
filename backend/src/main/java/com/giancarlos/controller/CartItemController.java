@@ -58,11 +58,9 @@ public class CartItemController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/remove/{email}/{productId}")
-    public ResponseEntity<String> removeCartItemByEmailAndProductId(@PathVariable String email, @PathVariable Long productId) {
-        UserDto userDto = userService.getUserByEmail(email);
-        CartItemDto cartItemDto = cartItemService.getCartItemByUserIdAndProductId(userDto.getId(), productId);
-        cartItemService.removeCartItem(cartItemDto);
+    @DeleteMapping("/remove/{cartItemId}")
+    public ResponseEntity<String> removeCartItemById(@PathVariable Long cartItemId) {
+        cartItemService.removeCartItem(cartItemId);
         String response = "CartItem Removed";
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

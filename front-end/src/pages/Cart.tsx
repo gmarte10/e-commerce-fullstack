@@ -40,14 +40,14 @@ const Cart = () => {
     }
   };
 
-  const handleRemoveCartItem = async (productId: number) => {
+  const handleRemoveCartItem = async (cartItemId: number) => {
     try {
       const token = localStorage.getItem("token");
       const email = localStorage.getItem("email");
       console.log(`Email: ${email}`);
       console.log(`Token: ${token}`);
       const response = await axiosInstance.delete(
-        `/api/cart-items/remove/${email}/${productId}`,
+        `/api/cart-items/remove/${cartItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -101,6 +101,7 @@ const Cart = () => {
                     <div className="cart-item-text">
                       <h5>{cartItem.name}</h5>
                       <div className="cart-item-info">
+                        <p>{cartItem.id}</p>
                         <p>${cartItem.price}</p>
                         <p>Quantity: {cartItem.quantity}</p>
                       </div>

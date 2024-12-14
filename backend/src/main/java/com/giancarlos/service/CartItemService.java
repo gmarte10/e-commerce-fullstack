@@ -52,14 +52,14 @@ public class CartItemService {
 
 
     @Transactional
-    public void removeCartItem(CartItemDto cartItemDto) {
-        if (cartItemDto.getQuantity() > 1) {
-            CartItem cartItem = cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()).orElseThrow();
-            cartItem.setQuantity(cartItemDto.getQuantity() - 1);
+    public void removeCartItem(Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow();
+        if (cartItem.getQuantity() > 1) {
+            cartItem.setQuantity(cartItem.getQuantity() - 1);
             cartItemRepository.save(cartItem);
         }
         else {
-            cartItemRepository.delete(cartItemRepository.findByUserIdAndProductId(cartItemDto.getUserId(), cartItemDto.getProductId()).orElseThrow());
+            cartItemRepository.delete(cartItem);
         }
     }
 
