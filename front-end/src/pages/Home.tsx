@@ -58,6 +58,24 @@ const Home = () => {
     setSearch(e.target.value);
   };
 
+  const handleSearch = async () => {
+    console.log("searching...");
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axiosInstance.get<Product[]>(
+        `/api/products/search/${search}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setProducts(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <NavBar />
@@ -71,7 +89,7 @@ const Home = () => {
               value={search}
               onChange={handleSearchChange}
             />
-            <Button variant="outline-secondary" id="search-bar-btn">
+            <Button variant="outline-secondary" id="search-bar-btn" onClick={handleSearch}>
               Search
             </Button>
           </InputGroup>

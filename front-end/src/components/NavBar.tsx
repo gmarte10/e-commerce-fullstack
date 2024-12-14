@@ -6,7 +6,7 @@ const NavBar = () => {
   const navigate = useNavigate();
   const logout = useLogout();
   const handleLogout = () => {
-    logout;
+    logout();
     navigate("/login");
   };
   return (

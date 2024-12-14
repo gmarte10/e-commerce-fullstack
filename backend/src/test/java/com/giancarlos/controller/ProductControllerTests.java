@@ -74,6 +74,27 @@ public class ProductControllerTests {
         verify(productResponseMapper, times(1)).toResponse(productDto);
     }
 
+    @Test
+    public void ProductController_SearchForProducts_ReturnMoreThanOneProductResponse() throws Exception {
+        String search = "hood";
+        ProductDto product = new ProductDto();
+        product.setId(1L);
+        List<ProductDto> searchResult = List.of(product);
+        ProductResponseDto productResponseDto = new ProductResponseDto();
+        productResponseDto.setId(1L);
+
+        when(productService.getProductsBySearch(search)).thenReturn(searchResult);
+        when(productResponseMapper.toResponse(any(ProductDto.class))).thenReturn(productResponseDto);
+
+        ResultActions resultActions = mockMvc.perform(get("/api/products/search/{search}", search)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L));
+
+        verify(productService, times(1)).getProductsBySearch(search);
+        verify(productResponseMapper, times(1)).toResponse(product);
+    }
 
     @Test
     public void ProductController_CreateProduct_ReturnProductResponse() throws Exception {

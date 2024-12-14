@@ -39,6 +39,16 @@ public class ProductController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/search/{search}")
+    public ResponseEntity<List<ProductResponseDto>> searchForProduct(@PathVariable String search) {
+        List<ProductDto> products = productService.getProductsBySearch(search);
+        List<ProductResponseDto> response = new ArrayList<>();
+        for (ProductDto productDto : products) {
+            response.add(productResponseMapper.toResponse(productDto));
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto productRequestDto) {
         Product product = Product.builder()
