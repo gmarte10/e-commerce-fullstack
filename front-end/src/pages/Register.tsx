@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import useRegisterUser from "../api/hooks/useRegisterUser";
+import axiosInstance from "../api/axiosInstance";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -10,12 +11,32 @@ const Register = () => {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const navigate = useNavigate();
-  const registerUser = useRegisterUser();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    registerUser(name, email, password, address, phone);
+    registerUser();
     navigate("/login");
+  };
+
+  const registerUser = async () => {
+    try {
+      const requestBody = {
+        name: name,
+        email: email,
+        role: "CUSTOMER",
+        address: address,
+        phone: phone,
+        password: password,
+      };
+      const response = await axiosInstance.post(
+        `/api/users/register`,
+        requestBody
+      );
+      console.log(`User registerd: ${JSON.stringify(response.data)}`);
+    } catch (error) {
+      console.error(error);
+      return "issue registering user";
+    }
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
