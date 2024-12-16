@@ -8,9 +8,12 @@ import com.giancarlos.model.Product;
 import com.giancarlos.service.ImageService;
 import com.giancarlos.service.ProductService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,14 +52,22 @@ public class ProductController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto productRequestDto) {
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductResponseDto> createProduct(
+            @RequestParam("name") String name,
+            @RequestParam("category") String category,
+            @RequestParam("description") String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("imageFile") MultipartFile imageFile
+    ) {
+        System.out.println("*****************");
+        System.out.printf("Received: name=%s, category=%s, description=%s, price=%f, imageFile=%s", name, category, description, price, imageFile);
         Product product = Product.builder()
-                .name(productRequestDto.getName())
-                .price(productRequestDto.getPrice())
-                .category(productRequestDto.getCategory())
-                .description(productRequestDto.getDescription())
-                .imageURL(imageService.uploadProductImageToLocal(productRequestDto.getImageFile()))
+                .name(name)
+                .price(price)
+                .category(category)
+                .description(description)
+                .imageURL(imageService.uploadProductImageToLocal(imageFile))
                 .cartItems(new ArrayList<>())
                 .orderItems(new ArrayList<>())
                 .build();
@@ -64,6 +75,30 @@ public class ProductController {
         ProductResponseDto response = productResponseMapper.toResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+//    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<ProductResponseDto> createProduct(
+//            @RequestPart("name") String name,
+//            @RequestPart("category") String category,
+//            @RequestPart("description") String description,
+//            @RequestPart("price") BigDecimal price,
+//            @RequestPart("imageFile") MultipartFile imageFile
+//    ) {
+//        System.out.println("*****************");
+//        System.out.printf("Received: name=%s, category=%s, description=%s, price=%f, imageFile=%s", name, category, description, price, imageFile);
+//        Product product = Product.builder()
+//                .name(name)
+//                .price(price)
+//                .category(category)
+//                .description(description)
+//                .imageURL(imageService.uploadProductImageToLocal(imageFile))
+//                .cartItems(new ArrayList<>())
+//                .orderItems(new ArrayList<>())
+//                .build();
+//        ProductDto saved = productService.createProduct(product);
+//        ProductResponseDto response = productResponseMapper.toResponse(saved);
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
 
     @DeleteMapping("/remove/{productId}")
     public ResponseEntity<String> removeProductById(@PathVariable Long productId) {

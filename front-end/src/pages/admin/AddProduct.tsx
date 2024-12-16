@@ -2,16 +2,20 @@ import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import AdminNavBar from "../../components/AdminNavBar";
+import axiosInstance from "../../api/axiosInstance";
 
 const AddProduct = () => {
   const [image, setImage] = useState<File | null>(null);
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     // loginUser();
+    await addProduct();
     navigate("/admin-home");
   };
 
@@ -25,6 +29,10 @@ const AddProduct = () => {
     setName(e.target.value);
   };
 
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDescription(e.target.value);
+  };
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategory(e.target.value);
   };
@@ -32,6 +40,46 @@ const AddProduct = () => {
     setPrice(e.target.value);
   };
 
+  const addProduct = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const email = localStorage.getItem("email");
+      console.log(`Email: ${email}`);
+      console.log(`Token: ${token}`);
+
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("category", category);
+      formData.append("description", description);
+      formData.append("price", price);
+      if (image) {
+        formData.append("imageFile", image);
+      }
+
+      const request = {
+        name: name,
+        price: price,
+        category: category,
+        description: description,
+        imageFile: image,
+      };
+
+      const response = await axiosInstance.post(
+        `/api/products/create`,
+        request,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(`Product Added: ${JSON.stringify(response.data)}`);
+    } catch (error) {
+      console.error(error);
+      return "issue adding product";
+    }
+  };
 
   return (
     <>
@@ -45,6 +93,13 @@ const AddProduct = () => {
               placeholder="name"
               value={name}
               onChange={handleNameChange}
+            />
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="description"
+              value={description}
+              onChange={handleDescriptionChange}
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicCategory">

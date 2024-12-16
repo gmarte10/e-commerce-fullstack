@@ -8,6 +8,10 @@ const AdminNavBar = () => {
       // localStorage.removeItem('token');
       navigate("/login");
     };
+
+    const handleAddProduct = () => {
+      navigate("/add-product");
+    }
     return (
       <>
         <div>
@@ -18,7 +22,7 @@ const AdminNavBar = () => {
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="me-auto">
                   <Nav.Link href="/admin-home">Home</Nav.Link>
-                  <Nav.Link href="/add-product">Add Product</Nav.Link>
+                  <Nav.Link onClick={handleAddProduct} href="/add-product">Add Product</Nav.Link>
                   <Nav.Link onClick={handleLogout} href="/login">
                     Logout
                   </Nav.Link>

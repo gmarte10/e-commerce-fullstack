@@ -1,17 +1,5 @@
 SET SEARCH_PATH TO ecommerce_schema;
 
-INSERT INTO users (name, email, password, role, address, phone)
-VALUES 	
-	(
-	'Jane Doe',
-	'janedoe499@gmail.com',
-	'$2a$12$GlXXZdzTHvk8IB3t1rq27eE7glIWjTbwb/ArLOVcxywXcaW59ZaT6',
-	'ADMIN',
-	'451 Park St',
-	'512-345-3333'
-	);
-
-
 INSERT INTO products (name, category, description, price, image_url)
 VALUES
 	(
