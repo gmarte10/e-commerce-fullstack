@@ -23,6 +23,7 @@ public class ImageService {
 
     public String getImageBase64(String imgURL) {
         validateInput(imgURL, "Image URL path was not provided");
+        System.out.println("***** Image URL: " + imgURL + " ********");
 
         try {
             Path imgPath = Paths.get(uploadDir, imgURL).normalize();

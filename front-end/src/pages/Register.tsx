@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import useRegisterUser from "../api/hooks/useRegisterUser";
 import axiosInstance from "../api/axiosInstance";
 
 const Register = () => {

@@ -21,6 +21,19 @@ public class OrderItemResponseMapper {
         if (orderItemDto == null) {
             throw new OrderItemNotFoundException("OrderItemDto is null in OrderItemResponseMapper in toResponse");
         }
+        if (orderItemDto.getProductId() == -1) {
+            return OrderItemResponseDto.builder()
+                    .id(orderItemDto.getId())
+                    .price(orderItemDto.getPrice())
+                    .quantity(orderItemDto.getQuantity())
+                    .orderId(orderItemDto.getOrderId())
+                    .name("Product Removed")
+                    .description("Product has been removed and is no longer being sold")
+                    .imageBase64(imageService.getImageBase64("removed.jpg"))
+                    .category("Removed")
+                    .build();
+
+        }
         Product product = productService.getProductById(orderItemDto.getProductId());
         return OrderItemResponseDto.builder()
                 .id(orderItemDto.getId())
