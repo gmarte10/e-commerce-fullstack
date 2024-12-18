@@ -14,6 +14,17 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import '../css/home.css';
 
+/**
+ * Home component that displays a list of products available in the store. 
+ * It allows users to search for products and navigate to the details page of each product.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Home />
+ * )
+ */
+
 interface Product {
   id: number;
   name: string;

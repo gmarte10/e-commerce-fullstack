@@ -1,6 +1,18 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * AdminNavBar component that renders the navigation bar for the admin panel.
+ * This component provides navigation links for the admin to access different parts of the admin dashboard
+ * and logout functionality.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <AdminNavBar />
+ * )
+ */
+
 const AdminNavBar = () => {
   const navigate = useNavigate();
 

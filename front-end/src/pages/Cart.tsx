@@ -5,6 +5,18 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import "../css/cart.css";
 
+/**
+ * Cart component that displays the user's shopping cart, including product details, 
+ * quantity, price, and total cost. Users can remove items from the cart or proceed 
+ * to checkout.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Cart />
+ * )
+ */
+
 interface CartItem {
   id: number;
   productId: number;

@@ -4,6 +4,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import "../css/checkout.css";
 
+/**
+ * Checkout component that displays the user's shipping address, payment options, 
+ * and order total. Users can place an order, which clears the cart and navigates 
+ * to an order confirmation page.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Checkout />
+ * )
+ */
+
 interface CartItem {
   id: number;
   productId: number;

@@ -12,6 +12,18 @@ import AdminNavBar from "../../components/AdminNavBar";
 import axiosInstance from "../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * AdminHome component that displays a list of products for the admin user.
+ * It allows the admin to search products and remove them from the platform.
+ * Products are fetched from the backend API, and the admin can search or filter products by name.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <AdminHome />
+ * )
+ */
+
 interface Product {
   id: number;
   name: string;

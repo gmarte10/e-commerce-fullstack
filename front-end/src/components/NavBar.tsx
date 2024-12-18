@@ -2,6 +2,17 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import '../css/navbar.css';
 
+/**
+ * NavBar component that renders the navigation bar for the user interface.
+ * This component includes links to the home page, cart, orders, and a logout button for the user.
+ * It allows the user to log out and be redirected to the login page, removing user data from `localStorage`.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <NavBar />
+ * )
+ */
 
 const NavBar = () => {
   const navigate = useNavigate();

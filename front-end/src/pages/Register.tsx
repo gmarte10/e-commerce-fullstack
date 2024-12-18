@@ -4,6 +4,18 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import "../css/register.css";
 
+/**
+ * Register component allows users to create a new account by providing their personal details.
+ * The component collects user information such as email, password, name, address, and phone number.
+ * Upon successful registration, the user is redirected to the login page.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Register />
+ * )
+ */
+
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

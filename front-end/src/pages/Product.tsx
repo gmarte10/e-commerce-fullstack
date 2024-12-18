@@ -5,6 +5,18 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import "../css/product.css";
 
+/**
+ * Product component displays the details of a selected product, including its name, description, category, price, and image.
+ * It allows the user to select a quantity and add the product to their cart.
+ * The component also checks if the user is logged in before allowing access.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Product />
+ * )
+ */
+
 interface Product {
   id: number;
   name: string;

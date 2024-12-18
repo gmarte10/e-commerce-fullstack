@@ -5,6 +5,18 @@ import AdminNavBar from "../../components/AdminNavBar";
 import axiosInstance from "../../api/axiosInstance";
 import "../../css/add-product.css";
 
+/**
+ * AddProduct component that allows an admin user to add a new product to the e-commerce platform.
+ * The form includes fields for product name, description, category, price, and an image upload.
+ * The product details are submitted to the backend API, and the admin is redirected to the admin homepage after successful submission.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <AddProduct />
+ * )
+ */
+
 const AddProduct = () => {
   const [image, setImage] = useState<File | null>(null);
   const [name, setName] = useState("");

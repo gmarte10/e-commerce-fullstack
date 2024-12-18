@@ -11,6 +11,17 @@ import Order from "./pages/Order";
 import AdminHome from "./pages/admin/AdminHome";
 import AddProduct from "./pages/admin/AddProduct";
 
+/**
+ * The main `App` component is responsible for setting up routing within the application.
+ * It uses React Router to define routes for different views like login, home, register, product details, cart, checkout, orders, and admin functionalities.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <App />
+ * )
+ */
+
 function App() {
   return (
     <>

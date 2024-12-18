@@ -6,6 +6,18 @@ import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import "../css/order.css";
 
+/**
+ * Order component displays a list of orders placed by the user along with their items.
+ * It retrieves the user's orders and the associated items, then renders them in a list format.
+ * Each order displays its creation date, total amount, and details of each item (name, quantity, price).
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Order />
+ * )
+ */
+
 interface Order {
   id: number;
   totalAmount: number;

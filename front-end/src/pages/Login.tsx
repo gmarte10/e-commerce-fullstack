@@ -4,6 +4,20 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import '../css/login.css';
 
+/**
+ * Login component handles the user login process.
+ * It allows users to input their credentials (email and password),
+ * authenticate with the backend API, and store the user token and information 
+ * in the local storage. Upon successful login, the user is navigated 
+ * to their appropriate home page based on their role (admin or regular user).
+ *
+ * @component
+ * @example
+ * return (
+ *   <Login />
+ * )
+ */
+
 interface UserInfo {
   name: string;
   phone: string;
