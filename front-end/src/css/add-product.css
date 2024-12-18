@@ -1,0 +1,59 @@
+/* addProduct.css */
+
+/* Form container styling */
+.add-product-form {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form labels */
+.add-product-form label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Input fields */
+.add-product-form .form-control {
+  margin-bottom: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.add-product-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+/* File input styling */
+.add-product-form input[type="file"] {
+  padding: 5px;
+}
+
+/* Submit button styling */
+#upload-submit-btn {
+  width: 100%;
+  background-color: #007bff;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+#upload-submit-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Form group spacing */
+.add-product-form .form-group {
+  margin-bottom: 20px;
+}

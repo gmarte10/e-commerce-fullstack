@@ -1,0 +1,63 @@
+/* order.css */
+
+/* Container styling */
+.order-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* List group styling */
+.order-list-group-item {
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar styling for order header */
+#order-navbar {
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+
+#order-navbar-text {
+  font-size: 1rem;
+  color: #555;
+}
+
+#navbar-text:first-of-type {
+  font-weight: bold;
+}
+
+/* Order item row */
+.order-row {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Order item image styling */
+.order-image {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* Order item text content */
+.order-p h5 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.order-p p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+  color: #666;
+}

@@ -1,0 +1,67 @@
+/* home.css */
+
+/* Search bar container */
+.search-bar {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Search bar input */
+  .search-bar .form-control {
+    max-width: 86%;
+    border-radius: 0;
+    border-right: none;
+  }
+  
+  .search-bar .btn {
+    border-radius: 0;
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .search-bar .btn:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+  
+  /* Product cards layout */
+  .card {
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .product-image {
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  /* Card body styling */
+  .home-card-body {
+    text-align: center;
+  }
+  
+  .home-card-body .card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .home-card-body .card-text {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  /* Responsive grid adjustments */
+  @media (max-width: 768px) {
+    .card {
+      margin-bottom: 20px;
+    }
+  }
+  

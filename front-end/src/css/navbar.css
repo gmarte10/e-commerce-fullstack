@@ -1,0 +1,83 @@
+/* navbar.css */
+
+/* Navbar container styling */
+.navbar {
+  background-color: #ffffff; /* Primary blue */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000000 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Navbar toggler (hamburger menu) */
+.navbar-toggler {
+  border: none;
+}
+
+.navbar-toggler-icon {
+  filter: invert(100%);
+}
+
+/* Collapsed navbar background */
+.navbar-collapse {
+  background-color: #ffffff; /* Darker blue for mobile menus */
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Navbar links */
+.nav-link {
+  font-size: 1rem;
+  color: #000000 !important;
+  margin-right: 15px;
+  transition: color 0.3s, transform 0.2s;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #ffc107 !important; /* Highlight with gold color */
+  transform: translateY(-2px);
+}
+
+/* Active link styling */
+.nav-link.active {
+  font-weight: bold;
+  border-bottom: 2px solid #ffc107;
+  padding-bottom: 5px;
+}
+
+/* Logout link with special styling */
+.nav-link:last-child {
+  font-weight: bold;
+}
+
+.nav-link:last-child:hover {
+  background-color: #dc3545; /* Red background for logout */
+  color: #ffffff !important;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+/* Navbar container for responsive design */
+.container-navbar {
+  max-width: 1200px;
+}
+
+/* Responsive styling for smaller devices */
+@media (max-width: 768px) {
+  .nav-link {
+    margin-right: 10px;
+    font-size: 0.9rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+}

@@ -1,5 +1,7 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import '../css/navbar.css';
+
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ const NavBar = () => {
     <>
       <div>
         <Navbar expand="lg" className="bg-body-tertiary">
-          <Container>
+          <Container className="container-navbar">
             <Navbar.Brand>E-Commerce</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">

@@ -4,6 +4,7 @@ import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import "../css/order.css";
 
 interface Order {
   id: number;
@@ -86,13 +87,13 @@ const Order = () => {
   return (
     <>
       <NavBar />
-      <Container>
+      <Container className="order-container">
         <ListGroup>
           {ordersWithItems.map((orderWithItems, index) => (
-            <ListGroup.Item key={index}>
-              <Navbar expand="lg" className="bg-body-tertiary">
-                <Container>
-                  <Navbar.Text>
+            <ListGroup.Item className="order-list-group-item" key={index}>
+              <Navbar id="order-navbar" expand="lg" className="bg-body-tertiary">
+                <Container className="order-container">
+                  <Navbar.Text id="order-navbar-text">
                     Order Placed:{" "}
                     {new Date(orderWithItems.order.createdAt).toLocaleString()}
                   </Navbar.Text>
@@ -101,7 +102,7 @@ const Order = () => {
                   </Navbar.Text>
                 </Container>
               </Navbar>
-              <Row>
+              <Row className="order-row">
                 {orderWithItems.items.map((item) => (
                   <Row key={item.id} className="order-row">
                     <Col className="order-col" md={2}>

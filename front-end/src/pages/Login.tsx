@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import '../css/login.css';
 
 interface UserInfo {
   name: string;

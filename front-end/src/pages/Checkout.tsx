@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import "../css/checkout.css";
 
 interface CartItem {
   id: number;

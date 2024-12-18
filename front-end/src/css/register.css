@@ -1,0 +1,54 @@
+/* register.css */
+
+/* Page container styling */
+.register-form {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form labels */
+  form label {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Input fields */
+  form .form-control {
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 1rem;
+  }
+  
+  form .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+  }
+  
+  /* Submit button styling */
+  #register-submit-btn {
+    width: 100%;
+    background-color: #007bff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  #register-submit-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Form group spacing */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  

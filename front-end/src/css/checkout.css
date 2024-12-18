@@ -1,0 +1,97 @@
+/* checkout.css */
+
+/* Main container styling */
+.checkout-container {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Row styling */
+.checkout-row {
+  margin-bottom: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.checkout-row h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.checkout-row h4 {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Payment buttons styling */
+.pay-btn-div {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pay-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pay-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Checkout column styling */
+.checkout-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-col-content {
+  text-align: center;
+}
+
+.checkout-col-content h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.checkout-col-content p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Place Order button styling */
+.checkout-col-content button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.checkout-col-content button:hover {
+  background-color: #333;
+}

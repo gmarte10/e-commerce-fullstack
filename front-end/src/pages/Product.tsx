@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import "../css/product.css";
 
 interface Product {
   id: number;
@@ -66,14 +67,14 @@ const Product = () => {
               />
             </Col>
             <Col md={5}>
-              <h1>{product.name}</h1>
-              <p>{product.description}</p>
-              <p>
+              <h1 id="product-name">{product.name}</h1>
+              <p className="product-text">{product.description}</p>
+              <p className="product-text">
                 <strong>Category:</strong> {product.category}
               </p>
             </Col>
             <Col md={3} className="text-center">
-              <h2>${product.price}</h2>
+              <h2 id="product-price">${product.price}</h2>
               <Form.Group controlId="quantity" className="mt-3">
                 <Form.Label>Quantity</Form.Label>
                 <Form.Control

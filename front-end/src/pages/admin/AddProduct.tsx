@@ -3,6 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import AdminNavBar from "../../components/AdminNavBar";
 import axiosInstance from "../../api/axiosInstance";
+import "../../css/add-product.css";
 
 const AddProduct = () => {
   const [image, setImage] = useState<File | null>(null);

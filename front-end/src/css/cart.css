@@ -1,0 +1,104 @@
+/* cart.css */
+
+/* Main cart container styling */
+.cart {
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Individual product row styling */
+.cart-product {
+  margin-bottom: 0px;
+  padding: 17px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+/* Product image styling */
+.cart-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* Cart item text styling */
+.cart-item-text h5 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.cart-item-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.cart-item-info p:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+/* Remove button styling */
+.cart-col-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cart-div-rm-btn button {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cart-div-rm-btn button:hover {
+  background-color: #c82333;
+}
+
+/* Right column styling */
+#cart-right-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+#cart-right-content h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+#cart-right-content button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#cart-right-content button:hover {
+  background-color: #218838;
+}
