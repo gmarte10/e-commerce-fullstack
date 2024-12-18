@@ -1,4 +1,4 @@
-E-Commerce Fullstack
+### E-Commerce Fullstack
 This is a full-stack e-commerce application built using Java (Spring Boot) for the backend and TypeScript (React) for the frontend. The application provides the functionality for users to browse products, place orders, and manage user authentication.
 
 Features
@@ -18,34 +18,3 @@ Styling: CSS / SCSS
 Setup
 Backend
 Clone the repository:
-
-bash
-Copy code
-git clone https://github.com/gmarte10/e-commerce-fullstack.git
-cd e-commerce-fullstack/backend
-Install dependencies:
-
-bash
-Copy code
-mvn install
-Run the application:
-
-bash
-Copy code
-mvn spring-boot:run
-Frontend
-Navigate to the frontend directory:
-
-bash
-Copy code
-cd ../frontend
-Install dependencies:
-
-bash
-Copy code
-npm install
-Run the application:
-
-bash
-Copy code
-npm start
