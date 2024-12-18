@@ -14,6 +14,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
+/**
+ * UserController handles the REST API endpoints related to user management.
+ * It provides functionality for registering a new user, logging in, and fetching user information.
+ *
+ * This controller interacts with the following services:
+ * 1. UserService: Manages the user-related business logic and data persistence.
+ * 2. BCryptPasswordEncoder: Handles password encoding for user registration.
+ * 3. UserResponseMapper: Maps UserDto objects to UserResponseDto objects for API responses.
+ *
+ * The available endpoints are:
+ * - `POST /api/users/register`: Registers a new user with the provided details.
+ * - `POST /api/users/login`: Authenticates a user by verifying the email and password.
+ * - `GET /api/users/info/{email}`: Fetches user information by email.
+ *
+ * @RestController
+ * @RequestMapping("/api/users")
+ */
+
 @RestController()
 @RequestMapping("/api/users")
 public class UserController {

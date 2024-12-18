@@ -17,6 +17,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * JwtService provides functionality for generating, validating, and extracting claims from JSON Web Tokens (JWTs).
+ * This service is used to handle user authentication via JWTs in a Spring-based application. It includes methods for
+ * generating JWT tokens, extracting user information, and validating token expiration and authenticity.
+ *
+ * The service relies on a secret key for signing and validating JWTs and uses the JJWT library for token creation and parsing.
+ *
+ * The key functionalities include:
+ * 1. Generating JWT tokens with custom expiration.
+ * 2. Extracting user-related information (such as username) from the token.
+ * 3. Validating the token by ensuring its authenticity and checking for expiration.
+ *
+ * This service is annotated with @Service to be used as a Spring-managed bean.
+ *
+ * @Service
+ */
+
 @Service
 public class JwtService {
 

@@ -14,6 +14,22 @@ import java.nio.file.StandardCopyOption;
 import java.util.Base64;
 import java.util.UUID;
 
+/**
+ * ImageService provides functionalities for handling image files, such as uploading, reading,
+ * and converting images to base64 format. The service is primarily used for uploading product images
+ * to a local directory and retrieving image data in base64 encoding for web use.
+ *
+ * Key functionalities include:
+ * 1. Uploading images to a local directory.
+ * 2. Converting images to a base64 string representation for display or use in web applications.
+ * 3. Validating input to ensure correct image file paths and data are provided.
+ *
+ * This service is annotated with @Service to be used as a Spring-managed bean and
+ * uses @Slf4j for logging to help track operations and handle errors.
+ *
+ * @Service
+ */
+
 @Service
 @Slf4j
 public class ImageService {

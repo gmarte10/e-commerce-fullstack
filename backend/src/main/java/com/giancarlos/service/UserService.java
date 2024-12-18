@@ -15,6 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * UserService is a service class that provides various operations related to user management.
+ * This service interacts with the repository to handle user registration, authentication, and retrieval of user data.
+ * It also facilitates generating JWT tokens for authenticated users.
+ *
+ * The service includes methods for:
+ * 1. Registering a new user.
+ * 2. Verifying user credentials (email and password).
+ * 3. Retrieving user information by email or ID.
+ * 4. Generating JWT tokens for authenticated users.
+ *
+ * This service is annotated with @Service to be recognized as a Spring service and injected into other components.
+ *
+ * @Service
+ */
+
 @Service
 public class UserService {
 

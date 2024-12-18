@@ -17,6 +17,26 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ProductController handles the REST API endpoints related to product management.
+ * It provides functionality for retrieving all products, searching for products, creating new products,
+ * and deleting products.
+ *
+ * This controller interacts with the following services:
+ * 1. ProductService: Manages the product-related business logic and data persistence.
+ * 2. ProductResponseMapper: Maps ProductDto objects to ProductResponseDto objects for API responses.
+ * 3. ImageService: Handles image uploads for products.
+ *
+ * The available endpoints are:
+ * - `GET /api/products/get-all`: Fetches all products from the database.
+ * - `GET /api/products/search/{search}`: Searches for products based on the search term.
+ * - `POST /api/products/create`: Creates a new product with the provided details and image.
+ * - `DELETE /api/products/remove/{productId}`: Deletes a product by its ID.
+ *
+ * @RestController
+ * @RequestMapping("/api/products")
+ */
+
 @RestController()
 @RequestMapping("/api/products")
 public class ProductController {
@@ -75,30 +95,6 @@ public class ProductController {
         ProductResponseDto response = productResponseMapper.toResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
-//    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<ProductResponseDto> createProduct(
-//            @RequestPart("name") String name,
-//            @RequestPart("category") String category,
-//            @RequestPart("description") String description,
-//            @RequestPart("price") BigDecimal price,
-//            @RequestPart("imageFile") MultipartFile imageFile
-//    ) {
-//        System.out.println("*****************");
-//        System.out.printf("Received: name=%s, category=%s, description=%s, price=%f, imageFile=%s", name, category, description, price, imageFile);
-//        Product product = Product.builder()
-//                .name(name)
-//                .price(price)
-//                .category(category)
-//                .description(description)
-//                .imageURL(imageService.uploadProductImageToLocal(imageFile))
-//                .cartItems(new ArrayList<>())
-//                .orderItems(new ArrayList<>())
-//                .build();
-//        ProductDto saved = productService.createProduct(product);
-//        ProductResponseDto response = productResponseMapper.toResponse(saved);
-//        return new ResponseEntity<>(response, HttpStatus.CREATED);
-//    }
 
     @DeleteMapping("/remove/{productId}")
     public ResponseEntity<String> removeProductById(@PathVariable Long productId) {

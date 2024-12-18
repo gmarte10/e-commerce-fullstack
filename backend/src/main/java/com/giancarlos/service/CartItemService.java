@@ -12,6 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * CartItemService provides the business logic for managing cart items.
+ * It interacts with the `CartItemRepository` to persist and retrieve cart item data
+ * and uses the `CartItemMapper` to convert between entity and DTO objects.
+ *
+ * This service offers the following functionalities:
+ * 1. Retrieving cart items by user ID.
+ * 2. Creating or updating cart items based on user ID and product ID.
+ * 3. Removing cart items from the cart by user ID or individual item by ID.
+ * 4. Fetching a specific cart item by user ID and product ID.
+ *
+ * The service ensures that cart items are handled with appropriate business rules,
+ * including updating quantities if the same product is added again to the cart.
+ *
+ * This service is annotated with @Service to be used as a Spring-managed bean.
+ *
+ * @Service
+ */
+
 @Service
 public class CartItemService {
     private final CartItemRepository cartItemRepository;

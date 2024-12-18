@@ -17,6 +17,23 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * SecurityConfig is a configuration class that sets up Spring Security for the application.
+ * It uses JWT-based authentication and disables session management to support stateless authentication.
+ * The class defines beans and configurations for authentication, password encoding, and security filter chains.
+ *
+ * The key components include:
+ * 1. **JwtFilter**: A custom filter that intercepts requests to validate JWT tokens and authenticate users.
+ * 2. **AuthenticationProvider**: Configures the authentication provider using a `UserDetailsService` and a password encoder (BCrypt).
+ * 3. **Security Filter Chain**: Configures HTTP security, including enabling/disabling CORS and CSRF, setting up routes that permit all users, and applying stateless session management.
+ *
+ * @Configuration
+ * @EnableWebSecurity
+ * @see JwtFilter
+ * @see UserDetailsService
+ * @see BCryptPasswordEncoder
+ */
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

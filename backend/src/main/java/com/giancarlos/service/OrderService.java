@@ -11,6 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * OrderService provides functionality for managing orders in the system.
+ * This service interacts with the `OrderRepository` to perform CRUD operations
+ * and maps entities to Data Transfer Objects (DTOs) using the `OrderMapper`.
+ * It includes methods for retrieving, creating, and handling orders.
+ *
+ * The service provides the following key functionalities:
+ * 1. Retrieving a list of orders associated with a specific user.
+ * 2. Retrieving a specific order by its ID.
+ * 3. Creating a new order and saving it to the database.
+ *
+ * This service is annotated with @Service to be managed by the Spring container.
+ *
+ * @Service
+ */
+
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;

@@ -11,6 +11,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * OrderItemController handles the REST API endpoints related to order item management.
+ * It provides functionality for retrieving order items for a specific order.
+ *
+ * This controller interacts with the following services:
+ * 1. OrderItemService: Manages the order item-related business logic and data persistence.
+ * 2. OrderItemResponseMapper: Maps OrderItemDto objects to OrderItemResponseDto objects for API responses.
+ *
+ * The available endpoint is:
+ * - `GET /api/order-items/get/{orderId}`: Fetches all order items for a specific order identified by its ID.
+ *
+ * @RestController
+ * @RequestMapping("/api/order-items")
+ */
+
 @RestController
 @RequestMapping("/api/order-items")
 public class OrderItemController {

@@ -19,6 +19,25 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * OrderController handles the REST API endpoints related to order management.
+ * It provides functionalities for creating and retrieving orders for users, as well as their associated order items.
+ *
+ * This controller performs operations for managing orders and integrates with the following services:
+ * 1. OrderService: Manages the order-related business logic and data persistence.
+ * 2. UserService: Handles user-related operations, such as retrieving user details by email.
+ * 3. OrderResponseMapper: Maps OrderDto objects to OrderResponseDto objects for API responses.
+ * 4. OrderItemService: Handles operations related to order items, including creation and retrieval.
+ * 5. ProductService: Retrieves product details by ID for creating order items.
+ *
+ * The available endpoints are:
+ * - `GET /api/orders/get/{email}`: Fetches all orders for a user identified by their email.
+ * - `POST /api/orders/create`: Creates a new order for a user, along with associated order items.
+ *
+ * @RestController
+ * @RequestMapping("/api/orders")
+ */
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {

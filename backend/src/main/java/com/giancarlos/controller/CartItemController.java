@@ -16,6 +16,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CartItemController handles the REST API endpoints related to cart items in the shopping cart.
+ * It provides functionalities for adding, retrieving, and removing items from a user's cart.
+ *
+ * This controller performs CRUD operations on the cart items and integrates with the following services:
+ * 1. CartItemService: Manages the cart item data and business logic.
+ * 2. UserService: Handles user-related operations, such as fetching user details.
+ * 3. CartItemResponseMapper: Maps CartItemDto objects to CartItemResponseDto objects for API responses.
+ * 4. ProductService: Handles product-related operations, such as retrieving product details.
+ *
+ * The available endpoints are:
+ * - `GET /api/cart-items/get/{email}`: Fetches cart items for a user identified by their email.
+ * - `POST /api/cart-items/create`: Creates a new cart item for a user.
+ * - `DELETE /api/cart-items/remove/{cartItemId}`: Removes a specific cart item by its ID.
+ * - `DELETE /api/cart-items/clear/{email}`: Removes all cart items for a user by their email.
+ *
+ * @RestController
+ * @RequestMapping("/api/cart-items")
+ */
+
 @RestController
 @RequestMapping("/api/cart-items")
 public class CartItemController {
