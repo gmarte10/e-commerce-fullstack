@@ -1,12 +1,16 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import useLogout from "./useLogout";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const logout = useLogout();
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    localStorage.removeItem("name");
+    localStorage.removeItem("phone");
+    localStorage.removeItem("address");
+    localStorage.removeItem("role");
+    console.log("Logging out");
     navigate("/login");
   };
   return (

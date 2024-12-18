@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import AdminNavBar from "../../components/AdminNavBar";
@@ -12,9 +12,16 @@ const AddProduct = () => {
   const [price, setPrice] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("Cannot access until user logs in");
+      navigate("/login");
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // loginUser();
     await addProduct();
     navigate("/admin-home");
   };
@@ -43,9 +50,7 @@ const AddProduct = () => {
   const addProduct = async () => {
     try {
       const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
-      console.log(`Email: ${email}`);
-      console.log(`Token: ${token}`);
+      console.log("Adding product...");
 
       const formData = new FormData();
       formData.append("name", name);
@@ -64,20 +69,15 @@ const AddProduct = () => {
         imageFile: image,
       };
 
-      const response = await axiosInstance.post(
-        `/api/products/create`,
-        request,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log(`Product Added: ${JSON.stringify(response.data)}`);
+      await axiosInstance.post(`/api/products/create`, request, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Successfully added new product");
     } catch (error) {
-      console.error(error);
-      return "issue adding product";
+      console.log(error);
     }
   };
 

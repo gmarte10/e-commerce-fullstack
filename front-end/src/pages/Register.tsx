@@ -27,14 +27,10 @@ const Register = () => {
         phone: phone,
         password: password,
       };
-      const response = await axiosInstance.post(
-        `/api/users/register`,
-        requestBody
-      );
-      console.log(`User registerd: ${JSON.stringify(response.data)}`);
+      await axiosInstance.post(`/api/users/register`, requestBody);
+      console.log(`User registerd successfully`);
     } catch (error) {
-      console.error(error);
-      return "issue registering user";
+      console.log(error);
     }
   };
 

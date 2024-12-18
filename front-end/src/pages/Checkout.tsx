@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 
@@ -26,22 +26,27 @@ const Checkout = () => {
   const total: number = location.state?.total || 0;
   const address = localStorage.getItem("address");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
 
   const getProductsInCart = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
-      const response = await axiosInstance.get<CartItem[]>(
-        `/api/cart-items/get/${email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setCartItems(response.data);
-    } catch (error) {
-      console.log(error);
+    if (!token) {
+      console.log("Cannot access until user logs in");
+      navigate("/login");
+    } else {
+      try {
+        const response = await axiosInstance.get<CartItem[]>(
+          `/api/cart-items/get/${email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setCartItems(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -51,9 +56,6 @@ const Checkout = () => {
 
   const handlePlaceOrder = () => {
     try {
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
-
       const orderItemRequests: OrderItemRequest[] = cartItems.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -72,6 +74,7 @@ const Checkout = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Order has been placed successfully");
 
       clearCart();
 
@@ -83,8 +86,6 @@ const Checkout = () => {
 
   const clearCart = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
       await axiosInstance.delete(`/api/cart-items/clear/${email}`, {
         headers: {
           Authorization: `Bearer ${token}`,

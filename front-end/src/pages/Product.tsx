@@ -1,7 +1,7 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 
 interface Product {
@@ -19,33 +19,38 @@ const Product = () => {
   const location = useLocation();
   const product: Product = location.state?.product;
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("Cannot access until user logs in");
+      navigate("/login");
+    }
+  }, [navigate]);
+
   const handleAddToCart = async () => {
     try {
       const token = localStorage.getItem("token");
       const email = localStorage.getItem("email");
-      console.log(`Email: ${email}`);
-      console.log(`Token: ${token}`);
       const requestBody = {
-          email: email,
-          productId: product.id,
-          quantity: quantity,
+        email: email,
+        productId: product.id,
+        quantity: quantity,
       };
-      const response = await axiosInstance.post(
-        `/api/cart-items/create`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(`CartItem Added: ${JSON.stringify(response.data)}`);
+      await axiosInstance.post(`/api/cart-items/create`, requestBody, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(`Product added to cart successfully`);
       navigate("/cart");
     } catch (error) {
-      console.error(error);
-      return "issue adding cart item";
+      console.log(error);
     }
   };
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>

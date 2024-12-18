@@ -19,47 +19,42 @@ const Cart = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [total, setTotal] = useState(0);
+  const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
 
   const getProductsInCart = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
-      console.log(`Email: ${email}`);
-      console.log(`Token: ${token}`);
-      const response = await axiosInstance.get<CartItem[]>(
-        `/api/cart-items/get/${email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response.data[0]);
-      setCartItems(response.data);
-    } catch (error) {
-      console.log(error);
+    if (!token) {
+      console.log("Cannot access until user logs in");
+      navigate("/login");
+    } else {
+      try {
+        const response = await axiosInstance.get<CartItem[]>(
+          `/api/cart-items/get/${email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Fetching cart items...");
+        setCartItems(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   const handleRemoveCartItem = async (cartItemId: number) => {
     try {
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
-      console.log(`Email: ${email}`);
-      console.log(`Token: ${token}`);
-      const response = await axiosInstance.delete(
-        `/api/cart-items/remove/${cartItemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(`CartItem Removed: ${JSON.stringify(response.data)}`);
+      await axiosInstance.delete(`/api/cart-items/remove/${cartItemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Cart item removed successfully");
       getProductsInCart();
     } catch (error) {
-      console.error(error);
-      return "issue removing cart item";
+      console.log(error);
     }
   };
 
@@ -69,7 +64,7 @@ const Cart = () => {
       total += cartItem.price * cartItem.quantity;
     });
     return total;
-  }
+  };
 
   useEffect(() => {
     getProductsInCart();
@@ -110,7 +105,13 @@ const Cart = () => {
                   </Col>
                   <Col className="cart-col-btn">
                     <div className="cart-div-rm-btn">
-                      <Button onClick = {() => {handleRemoveCartItem(cartItem.id)}}>Remove</Button>
+                      <Button
+                        onClick={() => {
+                          handleRemoveCartItem(cartItem.id);
+                        }}
+                      >
+                        Remove
+                      </Button>
                     </div>
                   </Col>
                 </Row>

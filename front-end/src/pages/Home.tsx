@@ -25,29 +25,33 @@ interface Product {
 const Home = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   const getProducts = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get<Product[]>(
-        `/api/products/get-all`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setProducts(response.data);
-      // console.log(`Products: ${JSON.stringify(response.data)}`);
-    } catch (error) {
-      console.log(error);
+    if (token === null) {
+      console.log("Cannot access until user logs in")
+      navigate("/login");
+    } else {
+      try {
+        console.log("Fetching all products...")
+        const response = await axiosInstance.get<Product[]>(
+          `/api/products/get-all`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setProducts(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   useEffect(() => {
     getProducts();
-    // console.log(products);
   }, []);
 
   const handleItemClick = (product: Product) => {
@@ -59,9 +63,8 @@ const Home = () => {
   };
 
   const handleSearch = async () => {
-    console.log("searching...");
     try {
-      const token = localStorage.getItem("token");
+      console.log("Searching...")
       const response = await axiosInstance.get<Product[]>(
         `/api/products/search/${search}`,
         {
@@ -89,7 +92,11 @@ const Home = () => {
               value={search}
               onChange={handleSearchChange}
             />
-            <Button variant="outline-secondary" id="search-bar-btn" onClick={handleSearch}>
+            <Button
+              variant="outline-secondary"
+              id="search-bar-btn"
+              onClick={handleSearch}
+            >
               Search
             </Button>
           </InputGroup>

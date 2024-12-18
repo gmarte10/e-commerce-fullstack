@@ -1,14 +1,9 @@
-import {
-  Col,
-  Container,
-  ListGroup,
-  Navbar,
-  Row,
-} from "react-bootstrap";
+import { Col, Container, ListGroup, Navbar, Row } from "react-bootstrap";
 
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 interface Order {
   id: number;
@@ -33,46 +28,50 @@ interface OrderWithItems {
   items: OrderItem[];
 }
 
-
 const Order = () => {
   const [ordersWithItems, setOrdersWithItems] = useState<OrderWithItems[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const getOrders = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
+    const token = localStorage.getItem("token");
+    const email = localStorage.getItem("email");
 
-      const orderResponse = await axiosInstance.get<Order[]>(
-        `/api/orders/get/${email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const orders = orderResponse.data;
-
-      const ordersWithItemsPromises = orders.map(async (order) => {
-        const itemsResponse = await axiosInstance.get<OrderItem[]>(
-          `/api/order-items/get/${order.id}`,
+    if (token === null) {
+      console.log("Cannot access until user logs in");
+      navigate("/login");
+    } else {
+      try {
+        const orderResponse = await axiosInstance.get<Order[]>(
+          `/api/orders/get/${email}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        return { order, items: itemsResponse.data};
-      })
-      const ordersWithItems = await Promise.all(ordersWithItemsPromises);
-      console.log(ordersWithItems);
-      setOrdersWithItems(ordersWithItems);
-      
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+
+        const orders = orderResponse.data;
+
+        const ordersWithItemsPromises = orders.map(async (order) => {
+          const itemsResponse = await axiosInstance.get<OrderItem[]>(
+            `/api/order-items/get/${order.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          return { order, items: itemsResponse.data };
+        });
+        const ordersWithItems = await Promise.all(ordersWithItemsPromises);
+        console.log("Fetching orders...");
+        setOrdersWithItems(ordersWithItems);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -93,8 +92,13 @@ const Order = () => {
             <ListGroup.Item key={index}>
               <Navbar expand="lg" className="bg-body-tertiary">
                 <Container>
-                  <Navbar.Text>Order Placed: {new Date(orderWithItems.order.createdAt).toLocaleString()}</Navbar.Text>
-                  <Navbar.Text>Total: ${orderWithItems.order.totalAmount.toFixed(2)}</Navbar.Text>
+                  <Navbar.Text>
+                    Order Placed:{" "}
+                    {new Date(orderWithItems.order.createdAt).toLocaleString()}
+                  </Navbar.Text>
+                  <Navbar.Text>
+                    Total: ${orderWithItems.order.totalAmount.toFixed(2)}
+                  </Navbar.Text>
                 </Container>
               </Navbar>
               <Row>

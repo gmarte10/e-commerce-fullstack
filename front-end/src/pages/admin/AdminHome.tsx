@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import AdminNavBar from "../../components/AdminNavBar";
 import axiosInstance from "../../api/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 interface Product {
   id: number;
@@ -23,28 +24,33 @@ interface Product {
 const AdminHome = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   const getProducts = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get<Product[]>(
-        `/api/products/get-all`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setProducts(response.data);
-      // console.log(`Products: ${JSON.stringify(response.data)}`);
-    } catch (error) {
-      console.log(error);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("Cannot access until user logs in");
+      navigate("/login");
+    } else {
+      try {
+        console.log("Fetching products...");
+        const response = await axiosInstance.get<Product[]>(
+          `/api/products/get-all`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setProducts(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   useEffect(() => {
     getProducts();
-    // console.log(products);
   }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +58,7 @@ const AdminHome = () => {
   };
 
   const handleSearch = async () => {
-    console.log("searching...");
+    console.log("Searching...");
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.get<Product[]>(
@@ -69,8 +75,8 @@ const AdminHome = () => {
     }
   };
 
-  const handleRemove = async (productId : number) => {
-    console.log("removing...");
+  const handleRemove = async (productId: number) => {
+    console.log("Removing product...");
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.delete(
@@ -81,13 +87,14 @@ const AdminHome = () => {
           },
         }
       );
-      setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
-      console.log(response.data)
+      setProducts((prevProducts) =>
+        prevProducts.filter((p) => p.id !== productId)
+      );
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
-
-  }
+  };
 
   return (
     <>
@@ -123,7 +130,12 @@ const AdminHome = () => {
                 <Card.Body className="home-card-body">
                   <Card.Title>{product.name}</Card.Title>
                   <Card.Text>${product.price}</Card.Text>
-                  <Button variant="primary" onClick={() => handleRemove(product.id)}>Remove</Button>
+                  <Button
+                    variant="primary"
+                    onClick={() => handleRemove(product.id)}
+                  >
+                    Remove
+                  </Button>
                 </Card.Body>
               </Card>
             </Col>

@@ -36,13 +36,7 @@ const Login = () => {
       localStorage.setItem("phone", infoResponse.data.phone);
       localStorage.setItem("address", infoResponse.data.address);
       localStorage.setItem("role", infoResponse.data.role);
-      
-
-      // console.log(`token: ${loginResponse.data}`);
-      // console.log(`name: ${infoResponse.data.name}`);
-      // console.log(`phone: ${infoResponse.data.phone}`);
-      // console.log(`address: ${infoResponse.data.address}`);
-      console.log(`role: ${infoResponse.data.role}`);
+      console.log("Logging in...");
     } catch (error) {
       console.error(error);
     }
@@ -52,12 +46,10 @@ const Login = () => {
     e.preventDefault();
     await loginUser();
     const role = localStorage.getItem("role");
-    console.log(role);
     if (role === "ADMIN") {
-      console.log("Admin Home")
-      navigate("/admin-home")
-    }
-    else {
+      console.log("Navigating to admin home...");
+      navigate("/admin-home");
+    } else {
       navigate("/home");
     }
   };
