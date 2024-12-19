@@ -15,4 +15,4 @@ This is a full-stack e-commerce application built using Java (Spring Boot) for t
 
 ## Frontend
 - Framework: React.tsx
-- Styling: CSS
+- Styling: CSS, React Bootstrap
